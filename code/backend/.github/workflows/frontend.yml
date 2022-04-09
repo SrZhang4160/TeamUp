@@ -1,0 +1,16 @@
+name: Deploy the forntend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "code/frontend/**"
+      - ".github/workflows/frontend.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # Add steps to build and deploy the frontend

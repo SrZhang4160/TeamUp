@@ -1,0 +1,17 @@
+
+name: Deploy the backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "code/backend/**"
+      - ".github/workflows/backend.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # Add steps to build and deploy the backend
