@@ -1,7 +1,7 @@
 from turtle import pd
 from django.http import HttpResponse, JsonResponse
 from rest_framework.authtoken.models import Token
-from .models import student, User, Project
+from .models import student, User, Project, Profile
 from .msg import *
 import json
 
@@ -11,7 +11,7 @@ def uid_exists(uid):
 def project_page_exit(request):
     try:
         req = json.loads(request.body)
-        print(req)
+        # print(req)
         
         if request.environ.get('HTTP_X_TOKEN') is not None:
             HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
@@ -47,7 +47,7 @@ def project_page_exit(request):
                 user.save()
                 project.save()
                 data = PROJECT_MSG(code=1, msg=PROJECT_EXIT_SUCCESS)
-                print(data)
+                # print(data)
             except:
                 data = PROJECT_MSG(msg=PROJECT_EDIT_FAIL)
             return HttpResponse(json.dumps(data), content_type='application/json')
@@ -110,18 +110,13 @@ def project_page_edit(request):
                         _tmp_user_name = _tmp_user.name
                         _tmp_user.projectId = project.projectId
                         #### If ADD TEAM MEMBER, need to update team member's project
-                        print('DEAD')
                         _tmp_user.project = Project.objects.get(projectId=project.projectId)
-                        print('DEAD1')
                         # UPDATE PERSONAL INFO
                         _tmp_user.project.save()
-                        print(_tmp_user.project)
+                        # print(_tmp_user.project)
                         _tmp_user.profile.userProject = {'projectId':_tmp_user.project.projectId, 'projectName':_tmp_user.project.projectName}
-                        print('DEAD3')
                         _tmp_user.profile.save()
-                        print('DEAD4')
                         _tmp_user.save()
-                        print('DEAD5')
                     except:
                         _tmp_user_name = ""
                     _tmp_member = {"name": _tmp_user_name,
@@ -131,16 +126,25 @@ def project_page_edit(request):
                 filter_teamMemName = [mem for mem in project.teamMemName if (len(mem["name"])>0 and len(mem['eml'])>0) ]
                 if len(filter_teamMemName) < 6:
                     filter_teamMemName = filter_teamMemName + [{"name": "", "eml": ""}] * (6 - len(filter_teamMemName))
-                print(project.projectId)
-                print(project.projectName)
                 user.profile.userProject = {'projectId':project.projectId, 'projectName':project.projectName}
                 user.profile.save()
-                print('DEAD7')
                 project.teamMemName = filter_teamMemName
-                print('DEAD8')
                 project.save()
+
+                # DELETE MEMBER student.projectId p = Profile.objects.get(uid= user.uid)
+                all_students = student.objects.all()
+                for user in all_students:
+                    # print(user.projectId, project.teamLeader, project.teamMemName)
+                    # print(user)
+                    if user.projectId == project.projectId and (user != project.teamLeader and user.email not in [t['eml'] for t in project.teamMemName]):
+                        # print(user.email)
+                        user.projectId = ""
+                        p = Profile.objects.get(uid= user.uid)
+                        user.profile.userProject = []
+                        user.save()
+                        user.profile.save()
                 data = PROJECT_MSG(code=1, msg=PROJECT_EDIT_SUCCESS)
-                
+                # print(data)               
             except:
                 data = PROJECT_MSG(msg=PROJECT_EDIT_FAIL)
             return HttpResponse(json.dumps(data), content_type='application/json')
@@ -151,7 +155,7 @@ def project_page_edit(request):
 
 def project_page_view(request):
     req = json.loads(request.body)
-    print(req)
+    # print(req)
     
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
@@ -237,7 +241,7 @@ def project_page_view(request):
                                 "appliedList": project.applied_stu,
                                 },
                         }
-                    print(data)
+                    # print(data)
                 return HttpResponse(json.dumps(data), content_type='application/json')
             except:
                 data =  {
