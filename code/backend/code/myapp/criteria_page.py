@@ -16,6 +16,14 @@ def criteria_page(request):
     try:
         user = instructor.objects.get(uid=HTTP_X_TOKEN)
         try:
+            if req["isTemp"] != 0:
+                data = {
+                    "code": 1,
+                    "msg": CRITERIA_PAGE_FAIL,
+                    "criteriaList": []
+                }
+                return HttpResponse(json.dumps(data), content_type='application/json')
+            
             if user.criteriaList == []:
                 major = criteria(criteriaId= "001", criteriaName = "major")
                 major.save()
@@ -39,12 +47,18 @@ def criteria_page(request):
                 for criteria in all_criteria:
                     user.criteriaList.append({'criteriaId': criteria.criteriaId, 'criteriaName': criteria.criteriaName, 
                                               'criteriaNum': criteria.criteriaNum, 'criteriaPption': criteria.criteriaPption})
+                    print('for loop ok')
+                print("first time")
+                data = {
+                    "code": 1,
+                    "msg": CRITERIA_SUC,
+                    "criteriaList": instructor.criteriaList
+                }
             else:
                 data = {
-                    "code": 0,
-                    "msg": CRITERIA_SEARCH_INSTRUCTOR_FAIL,
-                    "userRole": 0,
-                    "project": {}
+                    "code": 1,
+                    "msg": CRITERIA_SUC,
+                    "criteriaList": instructor.criteriaList
                 }
         except:
             data =  {

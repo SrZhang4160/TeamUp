@@ -57,6 +57,7 @@ TEAMMATE_RETURN_ALL_FAIL3 = "???!"
 
 CRITERIA_SEARCH_INSTRUCTOR_FAIL = "Cannot search instructor"
 CRITERIA_PAGE_FAIL = "Cannot show the criteria page!"
+CRITERIA_SUC = "Return criteria successfully!"
 
 def CREATE_USER_MSG(code=0, msg=""):
     return {"code": code,
