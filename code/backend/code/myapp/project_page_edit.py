@@ -72,7 +72,7 @@ def project_page_edit(request):
             try:
                 # create student profile and change student status to have already filled in profile info
                 # student and profile have the same uid
-                #user=student.objects.get(uid=HTTP_X_TOKEN)
+                # user=student.objects.get(uid=HTTP_X_TOKEN)
                 try:
                     project = Project.objects.get(projectId=req['projectId'])
                     user = student.objects.get(uid=HTTP_X_TOKEN)

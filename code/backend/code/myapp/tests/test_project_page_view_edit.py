@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test.client import RequestFactory
-from myapp.models import User, student, Profile, Project
+from myapp.models import User, instructor, student, Profile, Project
 from django.test.client import Client
 from .test_utils import post_request
 import json 
@@ -14,6 +14,7 @@ python manage.py migrate
 class test_project_page_view_edit(TestCase):   
     def setUp(self, enable=True):
         if enable:
+            instructor.objects.create(name="Instructor", avatar= "test", email="Ins@jhu.edu", password= "123321", uid="000")
             self.user = student(name="testname1", avatar= "test", email="test1@jhu.edu", password= "123321", uid="123")
             self.user.save()
             self.user = student(name="testname2", avatar= "test", email="test2@jhu.edu", password= "123321", uid="321")
@@ -27,11 +28,33 @@ class test_project_page_view_edit(TestCase):
     @pytest.mark.django_db(transaction=True)
     def test_queryProject(self, enable=True):
         if enable:
+            url = 'http://127.0.0.1:8000/fill_profile_api'
+            print(80*"-" + "\nstart to fill profile")
+            print(80*"-" + self.user.name)
+            self.client = Client()
+            json_data = {
+                            "HTTP_X_TOKEN": "321",
+                            "name": "testname2",
+                            "major": "major",
+                            "skillLevel": "skillLevel",
+                            "leadInt": "leadInt",
+                            "grade": "grade",
+                            "fieldInt": "fieldInt",
+                            "prod": "prod",
+                            "exep": "exep",
+                            "prefer": "prefer",
+                            "preferNot": "llll",
+                            "mbti": "mbti"
+                        }
+            self.response = self.client.post(url, json.dumps(json_data), content_type="application/json")
+            return_json = json.loads(self.response.content)
+            print(return_json['msg'])
+            
+            
+            
             url = 'http://127.0.0.1:8000/create_project_api'
             print(80*"-" + "\nstart to create project")
             print(80*"-" + self.user.name)
-            self.client = Client()
- 
             json_data = {
                             "HTTP_X_TOKEN": "321",
                             "projectName": "projectName001",
@@ -48,6 +71,7 @@ class test_project_page_view_edit(TestCase):
             return_json = json.loads(self.response.content)
             print(return_json['msg'])
 
+            print(80*"-" + "\nreturn all project")
             test_url = 'http://127.0.0.1:8000/return_all_project_api'
             data = {
                             "HTTP_X_TOKEN": "-1",
@@ -58,6 +82,7 @@ class test_project_page_view_edit(TestCase):
             return_json_0 = json.loads(self.response.content)
             print(return_json)
 
+            print(80*"-" + "\napply to project")
             test_url = 'http://127.0.0.1:8000/apply_to_project_api'
             data = {
                             "HTTP_X_TOKEN": "123",
@@ -67,6 +92,7 @@ class test_project_page_view_edit(TestCase):
             return_json = json.loads(self.response.content)
             print(return_json)
 
+            print(80*"-" + "\nproject_page_view")
             test_url = 'http://127.0.0.1:8000/project_page_view_api'
             data = {
                             "HTTP_X_TOKEN": "321",
@@ -76,6 +102,8 @@ class test_project_page_view_edit(TestCase):
             return_json = json.loads(self.response.content)
             print(return_json)
 
+            print(80*"-" + "\nproject_page_api")
+            print(80*"-" + self.user.name)
             test_url = 'http://127.0.0.1:8000/project_page_api'
             data = {
                             "HTTP_X_TOKEN": "321"
@@ -84,6 +112,7 @@ class test_project_page_view_edit(TestCase):
             return_json = json.loads(self.response.content)
             print(return_json)
 
+            print(80*"-" + "\nproject_page_api")
             test_url = 'http://127.0.0.1:8000/project_page_api'
             data = {
                             "HTTP_X_TOKEN": "321",
@@ -92,7 +121,18 @@ class test_project_page_view_edit(TestCase):
             self.response = self.client.post(test_url, json.dumps(data), content_type="application/json")
             return_json = json.loads(self.response.content)
             print(return_json)
+            
+            print(80*"-" + "\nproject_page_api_instructor")
+            test_url = 'http://127.0.0.1:8000/project_page_api'
+            data = {
+                            "HTTP_X_TOKEN": "000",
+                            "projectId": return_json_0['projectList'][-1]['projectId']
+                        }
+            self.response = self.client.post(test_url, json.dumps(data), content_type="application/json")
+            return_json = json.loads(self.response.content)
+            print(return_json)
 
+            print(80*"-" + "\nproject_page_edit_api")
             test_url = 'http://127.0.0.1:8000/project_page_edit_api'
             data = {
                     "HTTP_X_TOKEN": "321",
@@ -119,6 +159,7 @@ class test_project_page_view_edit(TestCase):
             return_json = json.loads(self.response.content)
             print(return_json)
 
+            print(80*"-" + "\nproject_exit_api")
             test_url = 'http://127.0.0.1:8000/project_page_exit_api'
             data = {
                             "HTTP_X_TOKEN": "321",
