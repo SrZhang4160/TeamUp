@@ -18,7 +18,7 @@ def criteria_page(request):
         try:
             if req["isTemp"] != 0:
                 data = {
-                    "code": 1,
+                    "code": 0,
                     "msg": CRITERIA_PAGE_FAIL,
                     "criteriaList": []
                 }
@@ -60,12 +60,14 @@ def criteria_page(request):
                     "msg": CRITERIA_SUC,
                     "criteriaList": instructor.criteriaList
                 }
+            return HttpResponse(json.dumps(data), content_type='application/json')
         except:
             data =  {
             "code": 0,
             "msg": CRITERIA_SEARCH_INSTRUCTOR_FAIL,
             "userRole": 0,
             "project": {}}
+            return HttpResponse(json.dumps(data), content_type='application/json')
     except:
         data =  {
             "code": 0,
