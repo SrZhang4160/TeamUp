@@ -7,6 +7,7 @@ import json
 
 def criteria_page(request):
     req = json.loads(request.body)
+
     
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
