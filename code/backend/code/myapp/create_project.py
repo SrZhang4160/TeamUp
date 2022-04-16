@@ -35,15 +35,18 @@ def create_project(request):
                     type = req['type'].split(",") if "," in req['type'] else req['type'],
                     skillWanted = req['skillWanted'],
                 )
+                print("Project info received")
                 user.project.teamLeader = user
                 user.project.projectId = user.project.generate_key()
                 user.projectId = user.project.projectId
                 # for PERSONAL INFO
-                user.profile.userProject = {'projectId':user.project.projectId, 'projectName':user.project.projectName}
+                user.profile.userProject = {'projectId':user.projectId, 'projectName':user.project.projectName}
+                print(user.projectId)
                 user.is_leader = True
                 user.save()
                 user.profile.save()
                 user.project.save()
+                
                 data = PROJECT_MSG(code=1, msg=PROJECT_FILL_SUCCESS)
             except:
                 data = PROJECT_MSG(msg=PROJECT_FILL_FAIL)

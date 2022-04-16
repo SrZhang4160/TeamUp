@@ -27,11 +27,12 @@ PROFILE_QUERY_FAIL="fail."
 
 PROJECT_APPLY_SUCCESS="Apply success"
 PROJECT_APPLY_FAIL="Apply fail"
+PROJECT_APPLY_REPEAT="You have applied for this project"
 PROJECT_EDIT_SUCCESS="Edit success"
 PROJECT_EDIT_FAIL="Edit fail"
 PROJECT_DEL_SUCCESS="Del success"
 PROJECT_DEL_FAIL="Del fail"
-
+PROJECT_EXIT_SUCCESS="Exit success"
 
 STUDENT_PROJECT_NUM_QUERY_SUCCESS="Student project num query success"
 STUDENT_PROJECT_NUM_QUERY_FAIL="Student project num query fail"
@@ -53,6 +54,10 @@ TEAMMATE_SEARCH_SUCCESS = "Success Search Students with valid criteria"
 TEAMMATE_RETURN_ALL_FAIL1 = "Cannot return all students: inputword problem!"
 TEAMMATE_RETURN_ALL_FAIL2 = "Cannot return all students: HTTP_X_TOKEN or request body problem!"
 TEAMMATE_RETURN_ALL_FAIL3 = "???!"
+
+CRITERIA_SEARCH_INSTRUCTOR_FAIL = "Cannot search instructor"
+CRITERIA_PAGE_FAIL = "Cannot show the criteria page!"
+CRITERIA_SUC = "Return criteria successfully!"
 
 def CREATE_USER_MSG(code=0, msg=""):
     return {"code": code,

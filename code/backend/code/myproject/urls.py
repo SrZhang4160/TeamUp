@@ -16,6 +16,7 @@ from myapp import return_student_num as myapp_return_student_num
 from myapp import del_project as myapp_del_project
 from myapp import find_teammate as myapp_find_teammate
 from myapp import communication as myapp_communication
+from myapp import criteria_page as myapp_criteria_page
 #from myapp import mygroup as myapp_mygroup_project
 
 urlpatterns = [
@@ -65,5 +66,8 @@ urlpatterns = [
     # 2.1 query profile (by other student)
     path('query_profile_others_api', myapp_profile.query_profile_others),
     #4.2 edit_profile
-    path('update_profile_api', myapp_profile.update_profile)
+    path('update_profile_api', myapp_profile.update_profile),
+    
+    #1.1 criteria page
+    path('criteria_page_api', myapp_criteria_page.criteria_page)
 ]

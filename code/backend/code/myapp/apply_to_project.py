@@ -27,17 +27,22 @@ def apply_to_project(request):
                 user = student.objects.get(uid=HTTP_X_TOKEN)
                 project = Project.objects.get(projectId=req['projectId'])
 
-                # --> check user status
-                if user.projectId: # user has a group
-                    print('-1')                    
-                    return_msg = "you are member/leader of other project, need to exit/terminate current project to join new project"
-                else: # user has no group
-                    print('0')
-                    return_msg = PROJECT_APPLY_SUCCESS
-                print('1')
-                # "you are member/leader of other project, need to exit/terminate current project to join new project",
+
                 if project.applied_stu is None:
                     project.applied_stu = []
+                    
+                # --> check user status 
+                if user.projectId: # user has a group
+                    print('-1')
+                    return_msg = "you are member/leader of other project, need to exit/terminate current project to join new project"
+                elif project.applied_stu.count(user) is not None: # user has applied for this project
+                    return_msg = PROJECT_APPLY_REPEAT
+                else:# user has no group
+                    print('0')
+                    return_msg = PROJECT_APPLY_SUCCESS
+                print('1') 
+                
+                # "you are member/leader of other project, need to exit/terminate current project to join new project",
                 project.applied_stu.append({"name": user.name, "eml": user.email})
                 print(project.applied_stu)
                 if user.applied_project is None:
@@ -46,6 +51,7 @@ def apply_to_project(request):
                 if req['projectId'] not in user.applied_project:
                     user.applied_project.append(req['projectId'])
                 print(user.applied_project)
+                
                 try:
                     user.save()
                 except Exception as e:

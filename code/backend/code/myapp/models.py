@@ -45,7 +45,8 @@ class instructor(models.Model):
     bio = models.TextField(null=True)
     avatar = models.ImageField(null=True, default="avatar.svg")
     uid = models.CharField(max_length=200, null=True)
-
+    criteriaList = BuiltinJSONField(unique=False, null=True, default=list)
+    
     def __str__(self):
         return self.name
 
@@ -198,3 +199,10 @@ class Project(models.Model):
 
     def __str__(self):
         return self.projectName
+    
+class criteria(models.Model):
+    criteriaId = models.CharField(max_length=200, null=True)
+    criteriaName = models.CharField(max_length=200, null=True)
+    criteriaNum = models.SmallIntegerField(default=0, null=True)
+    criteriaPption = models.CharField(max_length=200, null=True)
+            
