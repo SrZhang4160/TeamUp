@@ -58,7 +58,7 @@ class test_apply_to_project(TestCase):
             print(return_json)
 
             test_url = 'http://127.0.0.1:8000/apply_to_project_api'
-            print(80*"-" + "\nstart to search project")
+            print(80*"-" + "\nstart to apply for the project")
             print(80*"-" + self.user.name)
             data = {
                             "HTTP_X_TOKEN": "123",
@@ -69,7 +69,7 @@ class test_apply_to_project(TestCase):
             print(return_json)
 
             test_url = 'http://127.0.0.1:8000/apply_to_project_api'
-            print(80*"-" + "\nstart to search project")
+            print(80*"-" + "\nstart to apply for the project")
             print(80*"-" + self.user.name)
             data = {
                             "HTTP_X_TOKEN": "456",
@@ -79,6 +79,17 @@ class test_apply_to_project(TestCase):
             return_json = json.loads(self.response.content)
             print(return_json)
 
+            test_url = 'http://127.0.0.1:8000/apply_to_project_api'
+            print(80*"-" + "\nstart to apply for the project")
+            print(80*"-" + self.user.name)
+            data = {
+                            "HTTP_X_TOKEN": "456",
+                            "projectId": return_json_0['projectList'][-1]['projectId']
+                        }
+            self.response = self.client.post(test_url, json.dumps(data), content_type="application/json")
+            return_json = json.loads(self.response.content)
+            print(return_json)
+            
             test_url = 'http://127.0.0.1:8000/return_all_project_api'
             print(80*"-" + "\nstart to search project")
             print(80*"-" + self.user.name)
