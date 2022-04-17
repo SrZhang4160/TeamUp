@@ -91,3 +91,44 @@ def return_all_project(request):
     except Exception as e:
         data = PROJECT_MSG(msg=PROJECT_RETURN_ALL_FAIL2) ###
         return HttpResponse(json.dumps(data), content_type='application/json')
+
+def project_lang_distribution(request):
+    try:
+        req = json.loads(request.body)
+        
+        # if request.environ.get('HTTP_X_TOKEN') is not None:
+        try:
+            HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
+        except:
+            HTTP_X_TOKEN = req['HTTP_X_TOKEN'] 
+        
+        try:
+            # current dummy search: with no inputword and selectword
+            all_projects = Project.objects.values()  
+            languages = {}
+            for project in all_projects:
+                for lang in project['intendedLanguage']:
+                    if lang not in languages.keys():
+                        languages[lang] = 1
+                    else:
+                        languages[lang] += 1
+                if len(project['otherLanguage']) > 0:
+                    if 'otherLanguage' not in languages.keys():
+                        languages['otherLanguage'] = 1
+                    else:
+                        languages['otherLanguage'] += 1
+ 
+            all_langs = sum([languages[key] for key in languages.keys()])
+            dis_langs = [{"name": key, "percentage":"{:.2f}".format(languages[key]/all_langs*100)} for key in languages.keys()]
+            data = {"code":1,
+                    "msg":"suc",
+                    "projectsLanguages":dis_langs
+                    }
+            return HttpResponse(json.dumps(data), content_type='application/json')
+        except:
+            data = PROJECT_MSG(msg=PROJECT_RETURN_ALL_FAIL1) ####
+            return HttpResponse(json.dumps(data), content_type='application/json')
+        
+    except Exception as e:
+        data = PROJECT_MSG(msg=PROJECT_RETURN_ALL_FAIL2) ###
+        return HttpResponse(json.dumps(data), content_type='application/json')

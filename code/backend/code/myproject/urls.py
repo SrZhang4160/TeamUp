@@ -36,7 +36,7 @@ urlpatterns = [
     path('fill_profile_api', myapp_profile.fill_profile),
 
     path('create_project_api', myapp_create_project.create_project),
-    path('return_all_project_api', myapp_return_all_project.return_all_project),
+    path('return_all_project_api', myapp_return_all_project.return_all_project),  
     path('recommend_project_api', myapp_recommend_project.recommend_project),
     path('project_page_api', myapp_project_page.project_page),
     path('apply_to_project_api', myapp_apply_to_project_page.apply_to_project),
@@ -69,5 +69,8 @@ urlpatterns = [
     path('update_profile_api', myapp_profile.update_profile),
     
     #1.1 criteria page
-    path('criteria_page_api', myapp_criteria_page.criteria_page)
+    path('criteria_page_api', myapp_criteria_page.criteria_page),
+
+    #1.6 project language percentage
+    path('project_lang_distribution_api', myapp_return_all_project.project_lang_distribution),
 ]
