@@ -73,4 +73,7 @@ urlpatterns = [
 
     #1.6 project language percentage
     path('project_lang_distribution_api', myapp_return_all_project.project_lang_distribution),
+
+    #1.7 student interest field distribution
+    path('student_interest_field_distribution_api', myapp_return_all_project.student_interest_field_distribution),
 ]

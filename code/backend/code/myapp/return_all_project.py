@@ -132,3 +132,38 @@ def project_lang_distribution(request):
     except Exception as e:
         data = PROJECT_MSG(msg=PROJECT_RETURN_ALL_FAIL2) ###
         return HttpResponse(json.dumps(data), content_type='application/json')
+
+def student_interest_field_distribution(request):
+    try:
+        req = json.loads(request.body)
+        
+        # if request.environ.get('HTTP_X_TOKEN') is not None:
+        try:
+            HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
+        except:
+            HTTP_X_TOKEN = req['HTTP_X_TOKEN'] 
+        try:
+            all_students = student.objects.all()
+            interests = {}
+            for student in all_students:
+                try:
+                    for _int in student.profile.fieldInt:
+                        if _int not in interests.keys():
+                            interests[_int] = 1
+                        else:
+                            interests[_int] += 1
+                except:
+                    pass
+            dis_ints = [{"name": key, "num":"{:.2f}".format(interests[key])} for key in interests.keys()]
+            data = {"code":1,
+                    "msg":"suc",
+                    "interestedFields": dis_ints}
+            return HttpResponse(json.dumps(data), content_type='application/json')
+
+        except:
+            data = PROJECT_MSG(msg=PROJECT_RETURN_ALL_FAIL1) ####
+            return HttpResponse(json.dumps(data), content_type='application/json')
+        
+    except Exception as e:
+        data = PROJECT_MSG(msg=PROJECT_RETURN_ALL_FAIL2) ###
+        return HttpResponse(json.dumps(data), content_type='application/json')

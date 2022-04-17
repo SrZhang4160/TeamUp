@@ -100,7 +100,8 @@ class test_Create_ReturnALL_Retrieve_Project(TestCase):
             return_json = json.loads(self.response.content)
             print(return_json)
 
-            url_queryProject = 'http://127.0.0.1:8000/project_lang_distribution_api'
+            #url_queryProject = 'http://127.0.0.1:8000/project_lang_distribution_api'
+            url_queryProject = 'http://127.0.0.1:8000/student_interest_field_distribution_api'
             print(80*"-" + "\nstart to search project")
             print(80*"-" + self.user.name)
             json_data_queryProject = {
