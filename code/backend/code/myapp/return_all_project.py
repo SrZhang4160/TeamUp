@@ -65,6 +65,7 @@ def return_all_project(request):
                                         data["projectList"].append(project)
                     except:
                         pass
+                #import pdb; pdb.set_trace()
                 if len(req['selectword']) > 0:
                     try:
                         search_domains = {"type": "type", 
@@ -72,11 +73,14 @@ def return_all_project(request):
                         for selected_word in req['selectword']:
                             for project in all_projects:
                                 for _key in search_domains.keys(): 
-                                    search_str = " ".join(project[search_domains[_key]]) if type( project[search_domains[_key]]) is list else project[search_domains[_key]]
-                                    if re.search(selected_word, search_str, re.IGNORECASE):
-                                        # avoid duplicate project append
-                                        if project not in data["projectList"]:
-                                            data["projectList"].append(project)
+                                    try:
+                                        search_str = " ".join(project[search_domains[_key]]) if type( project[search_domains[_key]]) is list else project[search_domains[_key]]
+                                        if re.search(selected_word, search_str, re.IGNORECASE):
+                                            # avoid duplicate project append
+                                            if project not in data["projectList"]:
+                                                data["projectList"].append(project)
+                                    except:
+                                        pass
                     except:
                         pass
             return HttpResponse(json.dumps(data), content_type='application/json')
