@@ -79,8 +79,16 @@ class Profile(models.Model):
     
     def __str__(self):
         return self.name
- 
 
+class announcements(models.Model):
+    uid = models.CharField(max_length=200, null=True)
+    name = models.CharField(max_length=200, null=True)
+    val = models.CharField(max_length=5000, null=True)
+    releaseTime = models.CharField(max_length=200, null=True)
+
+    def generate_key(self):
+        return binascii.hexlify(os.urandom(20)).decode()
+        
 class student(models.Model):
     uid = models.CharField(max_length=200, null=True)
     name = models.CharField(max_length=200, null=True)

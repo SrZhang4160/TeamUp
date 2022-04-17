@@ -17,6 +17,7 @@ from myapp import del_project as myapp_del_project
 from myapp import find_teammate as myapp_find_teammate
 from myapp import communication as myapp_communication
 from myapp import criteria_page as myapp_criteria_page
+from myapp import msg_announcements as myapp_msg_announcements
 #from myapp import mygroup as myapp_mygroup_project
 
 urlpatterns = [
@@ -76,4 +77,13 @@ urlpatterns = [
 
     #1.7 student interest field distribution
     path('student_interest_field_distribution_api', myapp_return_all_project.student_interest_field_distribution),
+
+    #2.1 create announcement
+    path('annos_create_msg_api', myapp_msg_announcements.annos_create_msg),
+    #2.2 announcement list
+    path('annos_list_msg_api', myapp_msg_announcements.annos_list_msg),
+    #2.3 retrieve annoucement
+    path('annos_retrieve_msg_api', myapp_msg_announcements.annos_retrieve_msg),
+    #1.4 get newest annoucement
+    path('annos_latest_msg_api', myapp_msg_announcements.annos_latest_msg),
 ]
