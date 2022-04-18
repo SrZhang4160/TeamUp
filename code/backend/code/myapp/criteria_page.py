@@ -369,3 +369,38 @@ def criteria_group_show_page(request):
             "code": 0,
             "msg": CRITERIA_PAGE_FAIL}
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+def retrieve_group_with_userID_page(request):
+    req = json.loads(request.body)
+    
+    if request.environ.get('HTTP_X_TOKEN') is not None:
+        HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
+    else:
+        HTTP_X_TOKEN = req['HTTP_X_TOKEN']
+    try:
+        user = student.objects.get(uid=HTTP_X_TOKEN)
+        grp = prj_group.objects.get(groupTag="current")
+        user_group_id = user.projectId
+        userlist = []
+        for temp_grp in  grp.groupinfo:
+            if temp_grp["groupNo"] == user_group_id:
+                for team_mem in temp_grp['teamMemName']:
+                    if team_mem['eml'] != user.eml:
+                        team_member = student.objects.get(eml=team_mem['eml'])
+                        userlist.append({
+                                        "userId":team_member.uid,
+                                        "avatar":team_member.avatar.name,
+                                        "showVal": " ,".join(team_member.name, team_member.grad, team_member.major),
+                                        "email": team_member.eml
+                                        })
+        data = {
+                "code":1,
+                "msg":"suc",
+                "userlist": userlist
+                }
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    except:
+        data =  {
+            "code": 0,
+            "msg": CRITERIA_PAGE_FAIL}
+    return HttpResponse(json.dumps(data), content_type='application/json')
