@@ -1,7 +1,7 @@
 from turtle import pd
 from django.http import HttpResponse, JsonResponse
 from rest_framework.authtoken.models import Token
-from .models import instructor, student, User, Project, criteria
+from .models import instructor, student, User, Project, criteria, prj_group
 from .msg import *
 import json
 
@@ -226,6 +226,7 @@ def criteria_group_page(request):
     visualize = True
     try:
         user = instructor.objects.get(uid=HTTP_X_TOKEN)
+        filter_students = []
         if user.group_selection == 0:
             # all studnets
             if use_dummpy:
@@ -236,6 +237,7 @@ def criteria_group_page(request):
                 user_profiles = dumpy_user_profiles
             else:
                 all_students = student.objects.values()
+                filter_students = all_students
                 num_members = len(all_students)
                 user_profiles = []
                 for student in all_students:
@@ -249,45 +251,6 @@ def criteria_group_page(request):
                                     "mbti": student.mbti,
                                     "skillLevel": student.skillLevel,}
                     user_profiles.append(user_profile)
-                
-            user_all_embeds = []
-            for idx in range(len(user_profiles)):
-                domain_val_embds = []
-                for domain in domains:
-                    embd_vector = sentence_embedder(user_profiles[idx][domain])
-                    domain_val_embds.append(embd_vector)
-                weighted_embds = sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)])
-                user_all_embeds.append(weighted_embds)
-            print("Finish feature extraction")   
-            # kmeans_labels = cluster.KMeans(n_clusters=10).fit_predict(np.asarray(dummpy_use_all_embeds)) # This is the kmeans without constrain
-            # 
-            clf = KMeansConstrained(
-                    n_clusters=int(math.ceil(len(user_profiles)/7)),
-                    size_min=5,
-                    size_max=7,
-                    random_state=42
-                    )
-            clf.fit_predict(np.asarray(user_all_embeds))
-            #print(clf.cluster_centers_)
-            kmeans_labels = clf.labels_
-            if visualize:
-                standard_embedding = umap.UMAP(random_state=42).fit_transform(np.asarray(user_all_embeds))
-                plt.scatter(standard_embedding[:, 0], standard_embedding[:, 1], c=kmeans_labels, s=1, cmap='Spectral');
-                plt.savefig('grouping_cluster.png')
-
-            if not use_dummpy:
-                all_students = student.objects.values()
-                num_members = len(all_students)
-                user_profiles = []
-                for student in all_students:
-                    student.projectId = kmeans_labels[idx]
-
-            group_distribution = {}
-            for kmeans_label in kmeans_labels[:len(user_profile)]:
-                if str(kmeans_label) not in group_distribution.keys():
-                    group_distribution[str(kmeans_label)] = 1
-                else:
-                    group_distribution[str(kmeans_label)] += 1
         elif user.group_selection == 1:
             all_students = student.objects.values()
             num_members = len(all_students)
@@ -304,57 +267,82 @@ def criteria_group_page(request):
                                     "mbti": student.mbti,
                                     "skillLevel": student.skillLevel,}
                     user_profiles.append(user_profile)
+                    filter_students.append(student)
                 
-            user_all_embeds = []
-            for idx in range(len(user_profiles)):
-                domain_val_embds = []
-                for domain in domains:
-                    embd_vector = sentence_embedder(user_profiles[idx][domain])
-                    domain_val_embds.append(embd_vector)
-                weighted_embds = sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)])
-                user_all_embeds.append(weighted_embds)
-            print("Finish feature extraction")   
-            # kmeans_labels = cluster.KMeans(n_clusters=10).fit_predict(np.asarray(dummpy_use_all_embeds)) # This is the kmeans without constrain
-            # 
-            clf = KMeansConstrained(
-                    n_clusters=int(math.ceil(len(user_profiles)/7)),
-                    size_min=5,
-                    size_max=7,
-                    random_state=42
-                    )
-            clf.fit_predict(np.asarray(user_all_embeds))
-            #print(clf.cluster_centers_)
-            kmeans_labels = clf.labels_
-            if visualize:
-                standard_embedding = umap.UMAP(random_state=42).fit_transform(np.asarray(user_all_embeds))
-                plt.scatter(standard_embedding[:, 0], standard_embedding[:, 1], c=kmeans_labels, s=1, cmap='Spectral');
-                plt.savefig('grouping_cluster.png')
+        user_all_embeds = []
+        for idx in range(len(user_profiles)):
+            domain_val_embds = []
+            for domain in domains:
+                embd_vector = sentence_embedder(user_profiles[idx][domain])
+                domain_val_embds.append(embd_vector)
+            weighted_embds = sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)])
+            user_all_embeds.append(weighted_embds)
+        print("Finish feature extraction")   
+        # kmeans_labels = cluster.KMeans(n_clusters=10).fit_predict(np.asarray(dummpy_use_all_embeds)) # This is the kmeans without constrain
+        # 
+        clf = KMeansConstrained(
+                n_clusters=int(math.ceil(len(user_profiles)/7)),
+                size_min=5,
+                size_max=7,
+                random_state=42
+                )
+        clf.fit_predict(np.asarray(user_all_embeds))
+        #print(clf.cluster_centers_)
+        kmeans_labels = clf.labels_
+        if visualize:
+            standard_embedding = umap.UMAP(random_state=42).fit_transform(np.asarray(user_all_embeds))
+            plt.scatter(standard_embedding[:, 0], standard_embedding[:, 1], c=kmeans_labels, s=1, cmap='Spectral');
+            plt.savefig('grouping_cluster.png')
 
-            if not use_dummpy:
-                all_students = student.objects.values()
-                num_members = len(all_students)
-                user_profiles = []
-                for student in all_students:
-                    student.projectId = kmeans_labels[idx]
+        if not use_dummpy:
+            all_students = student.objects.values()
+            num_members = len(all_students)
+            user_profiles = []
+            for student in all_students:
+                student.projectId = kmeans_labels[idx]
 
-            group_distribution = {}
-            for kmeans_label in kmeans_labels[:len(user_profile)]:
-                if str(kmeans_label) not in group_distribution.keys():
-                    group_distribution[str(kmeans_label)] = 1
-                else:
-                    group_distribution[str(kmeans_label)] += 1
+        group_distribution = {}
+        for kmeans_label in kmeans_labels:
+            if str(kmeans_label) not in group_distribution.keys():
+                group_distribution[str(kmeans_label)] = 1
+            else:
+                group_distribution[str(kmeans_label)] += 1
+ 
+        return_groups = {}
+        for kmeans_label_idx in range(len(kmeans_labels)):
+            if kmeans_labels[kmeans_label_idx] not in  return_groups.keys():
+                return_groups[kmeans_labels[kmeans_label_idx]] = []
+            student = filter_students[kmeans_label_idx]
+            if {"name": student.name,"eml": student.eml} not in return_groups[kmeans_labels[kmeans_label_idx]]:
+                return_groups[kmeans_labels[kmeans_label_idx]].append({"name": student.name,"eml": student.eml})
+        return_project_list = []
+        for key in return_groups.keys():
+            return_project_list.append({"groupNo": key, "teamMemName": return_groups[key]})
         data = {"code": 1,
                 "msg": "suc",
-                "projectList": [{"groupNo": 1, "teamMemName":[{"name": "bbb","eml": "BBB@jhu.edu"}, 
-                                                              {"name": "ccc","eml": "CCC@jhu.edu"}]},
-                                {"groupNo": 2, "teamMemName":[{"name": "DD","eml": "DD@jhu.edu"}, 
-                                                              {"name": "EE","eml": "EE@jhu.edu"}]}]
+                "projectList":return_project_list
                 }
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    except:
+        data =  {
+            "code": 0,
+            "msg": CRITERIA_PAGE_FAIL}
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
-        data = {
-            "code": 1,
-            "msg": CRITERIA_SUC
-        }
+
+def criteria_group_save_page(request):
+    req = json.loads(request.body)
+    
+    if request.environ.get('HTTP_X_TOKEN') is not None:
+        HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
+    else:
+        HTTP_X_TOKEN = req['HTTP_X_TOKEN']
+    try:
+        grp = prj_group(groupinfo=req['projectList'])
+        grp.save()
+        data = {"code": 1,
+                "msg": "suc"
+                }
         return HttpResponse(json.dumps(data), content_type='application/json')
     except:
         data =  {

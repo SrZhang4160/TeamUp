@@ -93,5 +93,7 @@ urlpatterns = [
     path('update_criteria_page_left_api', myapp_criteria_page.update_criteria_page_left), 
     #3.7
     path('criteria_group_page_api', myapp_criteria_page.criteria_group_page),
+    #3.9
+    path('criteria_group_save_page_api', myapp_criteria_page.criteria_group_save_page),
       
 ]

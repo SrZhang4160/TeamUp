@@ -214,3 +214,5 @@ class criteria(models.Model):
     criteriaNum = models.SmallIntegerField(default=0, null=True)
     criteriaPption = models.CharField(max_length=200, null=True)
             
+class prj_group(models.Model):
+    groupinfo = BuiltinJSONField(unique=False, null=True, default=list)
