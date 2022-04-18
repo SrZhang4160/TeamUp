@@ -8,7 +8,7 @@ import requests
 import time
 """
 python manage.py makemigrations
-python manage.py migrat
+python manage.py migrate
 """
 class test_annosProject(TestCase):   
     def setUp(self):

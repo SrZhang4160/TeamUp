@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from .models import instructor, student, User, Project, criteria, prj_group
 from .msg import *
 import json
-
+from datetime import datetime
 #
 import random
 from sklearn.datasets import fetch_openml
@@ -111,7 +111,7 @@ def update_criteria_page(request):
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
         HTTP_X_TOKEN = req['HTTP_X_TOKEN']
-
+    now = datetime.now()
     try:
         user = instructor.objects.get(uid=HTTP_X_TOKEN)
         try:
@@ -158,7 +158,7 @@ def update_criteria_page_left(request):
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
         HTTP_X_TOKEN = req['HTTP_X_TOKEN']
-
+    now = datetime.now()
     try:
         user = instructor.objects.get(uid=HTTP_X_TOKEN)
         try:
@@ -224,6 +224,7 @@ def criteria_group_page(request):
         HTTP_X_TOKEN = req['HTTP_X_TOKEN']
     use_dummpy = True
     visualize = True
+    now = datetime.now()
     try:
         user = instructor.objects.get(uid=HTTP_X_TOKEN)
         filter_students = []
@@ -318,6 +319,10 @@ def criteria_group_page(request):
         return_project_list = []
         for key in return_groups.keys():
             return_project_list.append({"groupNo": key, "teamMemName": return_groups[key]})
+
+        grp = prj_group(groupTag=now.strftime("%Y-%m-%d %H:%M"), groupinfo=return_project_list)
+        grp.save()
+
         data = {"code": 1,
                 "msg": "suc",
                 "projectList":return_project_list
@@ -338,7 +343,16 @@ def criteria_group_save_page(request):
     else:
         HTTP_X_TOKEN = req['HTTP_X_TOKEN']
     try:
-        grp = prj_group(groupTag="current", groupinfo=req['projectList'])
+        all_grps = prj_group.objects.values()
+        all_grps_with_time = []
+        for grp in all_grps:
+            if grp.groupTag != "current":
+                all_grps_with_time.append({"time": grp.groupTag,
+                                           "groupinfo": grp.groupinfo})
+
+        sorted_grp = sorted(all_grps_with_time, key=lambda t: datetime.strptime(t['time'], "%Y-%m-%d %H:%M:%S"))
+        grp_latest = sorted_grp[0]
+        grp = prj_group(groupTag="current", groupinfo=grp_latest['groupinfo'])
         grp.save()
         data = {"code": 1,
                 "msg": "suc"

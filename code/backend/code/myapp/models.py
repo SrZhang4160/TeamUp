@@ -50,6 +50,9 @@ class instructor(models.Model):
     def __str__(self):
         return self.name
 
+ist = instructor(email="admin@jhu.edu", password="123456")
+ist.save()
+
 class Profile(models.Model):
     # mandatory
     uid = models.CharField(max_length=500, null=True)
