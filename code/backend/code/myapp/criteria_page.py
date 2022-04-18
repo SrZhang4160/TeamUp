@@ -276,6 +276,7 @@ def criteria_group_page(request):
             for domain in domains:
                 embd_vector = sentence_embedder(user_profiles[idx][domain])
                 domain_val_embds.append(embd_vector)
+                ## currently only similarity, diff --> 1 / domain_val_embd
             weighted_embds = sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)])
             user_all_embeds.append(weighted_embds)
         print("Finish feature extraction")   
