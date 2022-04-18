@@ -18,6 +18,7 @@ from myapp import find_teammate as myapp_find_teammate
 from myapp import communication as myapp_communication
 from myapp import criteria_page as myapp_criteria_page
 from myapp import msg_announcements as myapp_msg_announcements
+from myapp import contact_page as myapp_contact_page
 #from myapp import mygroup as myapp_mygroup_project
 
 urlpatterns = [
@@ -96,5 +97,10 @@ urlpatterns = [
     path('criteria_group_page_api', myapp_criteria_page.criteria_group_page),
     #3.9
     path('criteria_group_save_page_api', myapp_criteria_page.criteria_group_save_page),
-      
+    #4.0
+    path('retrieve_group_with_userID_page_api', myapp_criteria_page.retrieve_group_with_userID_page),
+    #4.1
+    path('contact_show_api', myapp_contact_page.contact_show),
+    #4.2
+    path('contact_edit_api', myapp_contact_page.contact_edit),
 ]

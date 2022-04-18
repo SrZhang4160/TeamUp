@@ -217,3 +217,12 @@ class criteria(models.Model):
 class prj_group(models.Model):
     groupTag = models.CharField(max_length=200, null=True)
     groupinfo = BuiltinJSONField(unique=False, null=True, default=list)
+
+class contact(models.Model):
+    contactTag = models.CharField(max_length=200, null=True)
+    instructorName = models.CharField(max_length=200, null=True)
+    instructorEmail = models.CharField(max_length=200, null=True)
+    zoomLink = models.CharField(max_length=200, null=True)
+    Ta = BuiltinJSONField(unique=False, null=True, default=list)
+    officeHour  = BuiltinJSONField(unique=False, null=True, default=list)
+    
