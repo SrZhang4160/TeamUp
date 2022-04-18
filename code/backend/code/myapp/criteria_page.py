@@ -104,6 +104,100 @@ def criteria_page(request):
             "project": {}}
     return HttpResponse(json.dumps(data), content_type='application/json')
 
+def update_criteria_page(request):
+    req = json.loads(request.body)
+
+    if request.environ.get('HTTP_X_TOKEN') is not None:
+        HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
+    else:
+        HTTP_X_TOKEN = req['HTTP_X_TOKEN']
+
+    try:
+        user = instructor.objects.get(uid=HTTP_X_TOKEN)
+        try:
+            if req["isTemp"] != 0:
+                data = {
+                    "code": 0,
+                    "msg": CRITERIA_PAGE_FAIL,
+                    "criteriaList": []
+                }
+                return HttpResponse(json.dumps(data), content_type='application/json')
+            for tmp_criteria in req["criteriaList"]:
+                tmp = criteria(criteriaId= tmp_criteria["criteriaId"], 
+                               criteriaName= tmp_criteria["criteriaName"], 
+                               criteriaNum= tmp_criteria["criteriaNum"], 
+                               criteriaPption= tmp_criteria["criteriaPption"]) 
+                tmp.save()
+            user.group_selection = 0
+            user.criteriaList = req["criteriaList"]
+            user.save()
+            data = {
+                "code": 1,
+                "msg": CRITERIA_SUC
+            }
+            return HttpResponse(json.dumps(data), content_type='application/json')
+        except:
+            data =  {
+            "code": 0,
+            "msg": CRITERIA_SEARCH_INSTRUCTOR_FAIL,
+            "userRole": 0,
+            "project": {}}
+            return HttpResponse(json.dumps(data), content_type='application/json')
+    except:
+        data =  {
+            "code": 0,
+            "msg": CRITERIA_PAGE_FAIL,
+            "userRole": 0,
+            "project": {}}
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+def update_criteria_page_left(request):
+    req = json.loads(request.body)
+
+    if request.environ.get('HTTP_X_TOKEN') is not None:
+        HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
+    else:
+        HTTP_X_TOKEN = req['HTTP_X_TOKEN']
+
+    try:
+        user = instructor.objects.get(uid=HTTP_X_TOKEN)
+        try:
+            if req["isTemp"] != 0:
+                data = {
+                    "code": 0,
+                    "msg": CRITERIA_PAGE_FAIL,
+                    "criteriaList": []
+                }
+                return HttpResponse(json.dumps(data), content_type='application/json')
+            for tmp_criteria in req["criteriaList"]:
+                tmp = criteria(criteriaId= tmp_criteria["criteriaId"], 
+                               criteriaName= tmp_criteria["criteriaName"], 
+                               criteriaNum= tmp_criteria["criteriaNum"], 
+                               criteriaPption= tmp_criteria["criteriaPption"]) 
+                tmp.save()
+            user.group_selection = 1
+            user.criteriaList = req["criteriaList"]
+            user.save()
+            data = {
+                "code": 1,
+                "msg": CRITERIA_SUC
+            }
+            return HttpResponse(json.dumps(data), content_type='application/json')
+        except:
+            data =  {
+            "code": 0,
+            "msg": CRITERIA_SEARCH_INSTRUCTOR_FAIL,
+            "userRole": 0,
+            "project": {}}
+            return HttpResponse(json.dumps(data), content_type='application/json')
+    except:
+        data =  {
+            "code": 0,
+            "msg": CRITERIA_PAGE_FAIL,
+            "userRole": 0,
+            "project": {}}
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
 def generate_random_student(num):
     domains = {"major": ['Computer Science','Cognitive Science','Robotics','Psychology', 'Electrical Engineering'],
              "grade": ['Undergraduate','Graduate'],
@@ -128,44 +222,142 @@ def criteria_group_page(request):
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
         HTTP_X_TOKEN = req['HTTP_X_TOKEN']
-
-    num_members = 1000
-    dumpy_user_profiles, domains = generate_random_student(num_members)
-    domains_criteria = [random.randint(1, 10) for key in range(len(domains.keys()))]
-    norm_domains_criteria= [tmp/sum(domains_criteria) for tmp in domains_criteria]
-    dummpy_user_all_embeds = []
-    for idx in range(len(dumpy_user_profiles)):
-        domain_val_embds = []
-        for domain in domains:
-            embd_vector = sentence_embedder(dumpy_user_profiles[idx][domain])
-            domain_val_embds.append(embd_vector)
-        weighted_embds = sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)])
-        dummpy_user_all_embeds.append(weighted_embds)
-    print("Finish feature extraction")   
-    # kmeans_labels = cluster.KMeans(n_clusters=10).fit_predict(np.asarray(dummpy_use_all_embeds)) # This is the kmeans without constrain
-    # 
-    clf = KMeansConstrained(
-            n_clusters=int(math.ceil(len(dumpy_user_profiles)/7)),
-            size_min=5,
-            size_max=7,
-            random_state=42
-            )
-    clf.fit_predict(np.asarray(dummpy_user_all_embeds))
-    #print(clf.cluster_centers_)
-    kmeans_labels = clf.labels_
+    use_dummpy = True
     visualize = True
-    if visualize:
-        standard_embedding = umap.UMAP(random_state=42).fit_transform(np.asarray(dummpy_user_all_embeds))
-        plt.scatter(standard_embedding[:, 0], standard_embedding[:, 1], c=kmeans_labels, s=1, cmap='Spectral');
-        plt.savefig('grouping_cluster.png')
+    try:
+        user = instructor.objects.get(uid=HTTP_X_TOKEN)
+        if user.group_selection == 0:
+            # all studnets
+            if use_dummpy:
+                num_members = 1000
+                dumpy_user_profiles, domains = generate_random_student(num_members)
+                domains_criteria = [random.randint(1, 10) for key in range(len(domains.keys()))]
+                norm_domains_criteria= [tmp/sum(domains_criteria) for tmp in domains_criteria]
+                user_profiles = dumpy_user_profiles
+            else:
+                all_students = student.objects.values()
+                num_members = len(all_students)
+                user_profiles = []
+                for student in all_students:
+                    user_profile = {"major": student.major,
+                                    "grade": student.grade,
+                                    "leadInt": student.leadInt,
+                                    "fieldInt": student.fieldInt,
+                                    "exep": student.exep,
+                                    "prod": student.prod,
+                                    "lang": student.lang,
+                                    "mbti": student.mbti,
+                                    "skillLevel": student.skillLevel,}
+                    user_profiles.append(user_profile)
+                
+            user_all_embeds = []
+            for idx in range(len(user_profiles)):
+                domain_val_embds = []
+                for domain in domains:
+                    embd_vector = sentence_embedder(user_profiles[idx][domain])
+                    domain_val_embds.append(embd_vector)
+                weighted_embds = sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)])
+                user_all_embeds.append(weighted_embds)
+            print("Finish feature extraction")   
+            # kmeans_labels = cluster.KMeans(n_clusters=10).fit_predict(np.asarray(dummpy_use_all_embeds)) # This is the kmeans without constrain
+            # 
+            clf = KMeansConstrained(
+                    n_clusters=int(math.ceil(len(user_profiles)/7)),
+                    size_min=5,
+                    size_max=7,
+                    random_state=42
+                    )
+            clf.fit_predict(np.asarray(user_all_embeds))
+            #print(clf.cluster_centers_)
+            kmeans_labels = clf.labels_
+            if visualize:
+                standard_embedding = umap.UMAP(random_state=42).fit_transform(np.asarray(user_all_embeds))
+                plt.scatter(standard_embedding[:, 0], standard_embedding[:, 1], c=kmeans_labels, s=1, cmap='Spectral');
+                plt.savefig('grouping_cluster.png')
 
-    for idx in range(len(dumpy_user_profiles)):
-        dumpy_user_profiles[idx]['assigned_group'] = kmeans_labels[idx]
+            if not use_dummpy:
+                all_students = student.objects.values()
+                num_members = len(all_students)
+                user_profiles = []
+                for student in all_students:
+                    student.projectId = kmeans_labels[idx]
 
-    group_distribution = {}
-    for kmeans_label in kmeans_labels[:len(dumpy_user_profiles)]:
-        if str(kmeans_label) not in group_distribution.keys():
-            group_distribution[str(kmeans_label)] = 1
-        else:
-            group_distribution[str(kmeans_label)] += 1
-    print("A")
+            group_distribution = {}
+            for kmeans_label in kmeans_labels[:len(user_profile)]:
+                if str(kmeans_label) not in group_distribution.keys():
+                    group_distribution[str(kmeans_label)] = 1
+                else:
+                    group_distribution[str(kmeans_label)] += 1
+        elif user.group_selection == 1:
+            all_students = student.objects.values()
+            num_members = len(all_students)
+            user_profiles = []
+            for student in all_students:
+                if student.projectId == "":
+                    user_profile = {"major": student.major,
+                                    "grade": student.grade,
+                                    "leadInt": student.leadInt,
+                                    "fieldInt": student.fieldInt,
+                                    "exep": student.exep,
+                                    "prod": student.prod,
+                                    "lang": student.lang,
+                                    "mbti": student.mbti,
+                                    "skillLevel": student.skillLevel,}
+                    user_profiles.append(user_profile)
+                
+            user_all_embeds = []
+            for idx in range(len(user_profiles)):
+                domain_val_embds = []
+                for domain in domains:
+                    embd_vector = sentence_embedder(user_profiles[idx][domain])
+                    domain_val_embds.append(embd_vector)
+                weighted_embds = sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)])
+                user_all_embeds.append(weighted_embds)
+            print("Finish feature extraction")   
+            # kmeans_labels = cluster.KMeans(n_clusters=10).fit_predict(np.asarray(dummpy_use_all_embeds)) # This is the kmeans without constrain
+            # 
+            clf = KMeansConstrained(
+                    n_clusters=int(math.ceil(len(user_profiles)/7)),
+                    size_min=5,
+                    size_max=7,
+                    random_state=42
+                    )
+            clf.fit_predict(np.asarray(user_all_embeds))
+            #print(clf.cluster_centers_)
+            kmeans_labels = clf.labels_
+            if visualize:
+                standard_embedding = umap.UMAP(random_state=42).fit_transform(np.asarray(user_all_embeds))
+                plt.scatter(standard_embedding[:, 0], standard_embedding[:, 1], c=kmeans_labels, s=1, cmap='Spectral');
+                plt.savefig('grouping_cluster.png')
+
+            if not use_dummpy:
+                all_students = student.objects.values()
+                num_members = len(all_students)
+                user_profiles = []
+                for student in all_students:
+                    student.projectId = kmeans_labels[idx]
+
+            group_distribution = {}
+            for kmeans_label in kmeans_labels[:len(user_profile)]:
+                if str(kmeans_label) not in group_distribution.keys():
+                    group_distribution[str(kmeans_label)] = 1
+                else:
+                    group_distribution[str(kmeans_label)] += 1
+        data = {"code": 1,
+                "msg": "suc",
+                "projectList": [{"groupNo": 1, "teamMemName":[{"name": "bbb","eml": "BBB@jhu.edu"}, 
+                                                              {"name": "ccc","eml": "CCC@jhu.edu"}]},
+                                {"groupNo": 2, "teamMemName":[{"name": "DD","eml": "DD@jhu.edu"}, 
+                                                              {"name": "EE","eml": "EE@jhu.edu"}]}]
+                }
+
+        data = {
+            "code": 1,
+            "msg": CRITERIA_SUC
+        }
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    except:
+        data =  {
+            "code": 0,
+            "msg": CRITERIA_PAGE_FAIL}
+    return HttpResponse(json.dumps(data), content_type='application/json')

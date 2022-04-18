@@ -44,9 +44,9 @@ class instructor(models.Model):
     type = models.PositiveSmallIntegerField(default=1, null=True)
     bio = models.TextField(null=True)
     avatar = models.ImageField(null=True, default="avatar.svg")
-    uid = models.CharField(max_length=200, null=True)
     criteriaList = BuiltinJSONField(unique=False, null=True, default=list)
-    
+    group_selection = models.CharField(max_length = 25, null=True)
+
     def __str__(self):
         return self.name
 
