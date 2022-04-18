@@ -215,4 +215,5 @@ class criteria(models.Model):
     criteriaPption = models.CharField(max_length=200, null=True)
             
 class prj_group(models.Model):
+    groupTag = models.CharField(max_length=200, null=True)
     groupinfo = BuiltinJSONField(unique=False, null=True, default=list)

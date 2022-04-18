@@ -338,10 +338,30 @@ def criteria_group_save_page(request):
     else:
         HTTP_X_TOKEN = req['HTTP_X_TOKEN']
     try:
-        grp = prj_group(groupinfo=req['projectList'])
+        grp = prj_group(groupTag="current", groupinfo=req['projectList'])
         grp.save()
         data = {"code": 1,
                 "msg": "suc"
+                }
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    except:
+        data =  {
+            "code": 0,
+            "msg": CRITERIA_PAGE_FAIL}
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
+def criteria_group_show_page(request):
+    req = json.loads(request.body)
+    
+    if request.environ.get('HTTP_X_TOKEN') is not None:
+        HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
+    else:
+        HTTP_X_TOKEN = req['HTTP_X_TOKEN']
+    try:
+        grp = prj_group.objects.get(groupTag="current")
+        data = {"code": 1,
+                "msg": "suc",
+                "projectList": grp.groupinfo
                 }
         return HttpResponse(json.dumps(data), content_type='application/json')
     except:

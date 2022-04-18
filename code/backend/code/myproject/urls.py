@@ -86,7 +86,8 @@ urlpatterns = [
     path('annos_retrieve_msg_api', myapp_msg_announcements.annos_retrieve_msg),
     #1.4 get newest annoucement
     path('annos_latest_msg_api', myapp_msg_announcements.annos_latest_msg),
-    
+    #3.1
+    path('criteria_group_show_page_api', myapp_criteria_page.criteria_group_show_page), 
     #3.5
     path('update_criteria_page_api', myapp_criteria_page.update_criteria_page), 
     #3.6
