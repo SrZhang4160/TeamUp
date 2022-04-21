@@ -143,3 +143,8 @@ python manage.py runserver
   ## Step 3: Return all projects without inputs http://127.0.0.1:8000/return_all_project_api
   ## Step 4: 'http://127.0.0.1:8000/del_project_api'
   ```
+  
+  To create new instance of instructor account before running server.
+  ```bash
+  echo "import os;from myapp.models import instructor;import binascii; ins = instructor.objects.get_or_create(name='Instructor', avatar='tiger', type=1, password='123456', defaults={'email':'admin@jhu.edu'}, uid=binascii.hexlify(os.urandom(20)).decode())" | python manage.py shell
+  ```
