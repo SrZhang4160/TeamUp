@@ -96,12 +96,16 @@ def retrieve_contact(request):
             HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
         else:
             HTTP_X_TOKEN = req['HTTP_X_TOKEN'] 
+        print(req)
+        print(HTTP_X_TOKEN)
         
         if uid_exists(HTTP_X_TOKEN) is False:
-            PROJECT_MSG(msg=PROJECT_CREATION_NO_USER)
+            data = PROJECT_MSG(msg=PROJECT_CREATION_NO_USER)
             return HttpResponse(json.dumps(data), content_type='application/json')
         else:
+            print('1')
             contact = student.objects.get(uid=HTTP_X_TOKEN)
+            print('2')
             data = {
                 "code":1,
                 "msg":"Success",

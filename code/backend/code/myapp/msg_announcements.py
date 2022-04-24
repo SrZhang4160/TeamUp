@@ -1,4 +1,3 @@
-from turtle import pd
 from django.http import HttpResponse, JsonResponse
 from rest_framework.authtoken.models import Token
 from .models import instructor, student, User, Project, announcements
@@ -26,6 +25,7 @@ def annos_list_msg(request):
     try:
         # get project id and user email
         all_anns = announcements.objects.values()  
+        # print(all_anns)
         return_all_anns = []
         for anno in all_anns:
             retrun_anno = {}
@@ -35,12 +35,11 @@ def annos_list_msg(request):
                 if anno_k == 'uid':
                     retrun_anno['id'] = anno[anno_k]
                 else:
-                    retrun_anno[anno_k] = anno[anno_k][:-3]
+                    retrun_anno[anno_k] = anno[anno_k]
             return_all_anns.append(retrun_anno)
-
         data = {"code":1,
                 "msg":"suc",
-                "announcements":return_all_anns}
+                "announcements":return_all_anns[::-1]}
         return HttpResponse(json.dumps(data), content_type='application/json')
     except:
         data =  {"code": 0, "msg": "fail"}
@@ -48,20 +47,14 @@ def annos_list_msg(request):
 
 def annos_retrieve_msg(request):
     req = json.loads(request.body)
-
-    if request.environ.get('HTTP_X_TOKEN') is not None:
-        HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
-    else:
-        HTTP_X_TOKEN = req['HTTP_X_TOKEN']
-
     try:
-        annos = announcements.objects.get(uid=HTTP_X_TOKEN)
+        annos = announcements.objects.get(uid=req['id'])
         print("announcements search is ok")
         data = {"code":1,"msg":"suc",
                 "announcement":{"id":annos.uid,
                                 "name":annos.name,
                                 "val":annos.val,
-                                "releaseTime":annos.releaseTime[:-3]}
+                                "releaseTime":annos.releaseTime}
                                 }
         return HttpResponse(json.dumps(data), content_type='application/json')
     except:
@@ -69,7 +62,11 @@ def annos_retrieve_msg(request):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 def annos_latest_msg(request):
-    req = json.loads(request.body)
+    # data = {"code":1,
+    #             "msg":"suc",
+    #             "announcement":{'name': 'anc', 'val': 'anc is dead', 'releaseTime': '2022-04-22 02:47:32'}}
+    # return HttpResponse(json.dumps(data), content_type='application/json')
+    # req = json.loads(request.body)
 
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
@@ -78,10 +75,9 @@ def annos_latest_msg(request):
 
     try:
         # get project id and user email
-        print(req)
         all_anns = announcements.objects.values() 
         sorted_list = sorted(all_anns, key=lambda t: datetime.strptime(t['releaseTime'], "%Y-%m-%d %H:%M:%S"))
-        anno_latest = sorted_list[0]
+        anno_latest = sorted_list[-1]
         data = {"code":1,
                 "msg":"suc",
                 "announcement":{
