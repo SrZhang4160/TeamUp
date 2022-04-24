@@ -850,6 +850,61 @@ Response example:
 > "releaseTime":"2022-04-08 12:33"}]} \
 
 
+| API address | Request method| Description |
+| :----------- | :------------: | ------------: |
+| http://47.253.99.242/update_criteria_page_api|   Post   |   Instructor updates criteria for recommendation algorithm|
+```diff
+Request parameters: 
+```
+>{ \
+>  "criteriaList": [ \
+> {"criteriaId": "aaa","criteriaName": "Major", \
+> "criteriaNum":33,"criteriaPption": "Similar"},  \
+> {"criteriaId": "bbb","criteriaName": "Grade", \
+> "criteriaNum":33,"criteriaPption": "Similar"},\
+> {"criteriaId": "ccc","criteriaName": "Leadership Interest",\
+> "criteriaNum":33,"criteriaPption": "Different"},\
+> {"criteriaId": "ddd","criteriaName": "Type of end product",\
+> "criteriaNum":33,"criteriaPption": "Similar"},\
+> {"criteriaId": "eee","criteriaName": "Related Experience",\
+> "criteriaNum":33,"criteriaPption": "Similar"},\
+> {"criteriaId": "fff","criteriaName": "Field of Interest",\
+> "criteriaNum":33,"criteriaPption": "Similar"},\
+> {"criteriaId": "ggg","criteriaName": "Programming Language",\
+> "criteriaNum":59,"criteriaPption": "Different"}\
+> ]}
+
+```diff
+Response example:
+```
+>{"code":1,"msg":"suc", \
+> }]}
+
+
+
+| API address | Request method| Description |
+| :----------- | :------------: | ------------: |
+| http://47.253.99.242/criteria_group_page_api|   Post   |   Instructor saves grouping results|
+```diff
+Request parameters: 
+```
+>{ \
+> "HTTP_X_TOKEN": xx, \
+> }
+
+```diff
+Response example:
+```
+>{"code": 1,"msg": "suc", \
+>  "projectList": []\
+> {"groupNo": 1 ,\
+> "teamMemName": [\
+> {"name": "bbb","eml": "BBB@jhu.edu"}, \
+> {"name": "ccc","eml": "CCC@jhu.edu"}]},\
+> {"groupNo": 2,\
+> "teamMemName": [\
+> {"name": "DD","eml": "DD@jhu.edu"}, \
+> {"name": "EE","eml": "EE@jhu.edu"}]}]}
 
 ## About Us!
 
