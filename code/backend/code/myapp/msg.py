@@ -55,6 +55,11 @@ TEAMMATE_RETURN_ALL_FAIL1 = "Cannot return all students: inputword problem!"
 TEAMMATE_RETURN_ALL_FAIL2 = "Cannot return all students: HTTP_X_TOKEN or request body problem!"
 TEAMMATE_RETURN_ALL_FAIL3 = "???!"
 
+LANGUAGE_FAIL1 = "LANGUAGE_FAIL1"
+LANGUAGE_FAIL1 = "LANGUAGE_FAIL2"
+INTEREST_FAIL1 = "INTEREST_FAIL1"
+INTEREST_FAIL2 = "INTEREST_FAIL2"
+
 CRITERIA_SEARCH_INSTRUCTOR_FAIL = "Cannot search instructor"
 CRITERIA_PAGE_FAIL = "Cannot show the criteria page!"
 CRITERIA_SUC = "Return criteria successfully!"

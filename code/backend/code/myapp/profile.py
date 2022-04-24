@@ -31,7 +31,8 @@ def create_student(request):
 def query_profile(request):
     try:
         # read request body from front end
-        req = json.loads(request.body)
+        # print(request.body)
+        # req = json.loads(request.body)
         
         if request.environ.get('HTTP_X_TOKEN') is not None:
             HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
@@ -67,7 +68,6 @@ def query_profile(request):
                                 },
                 "userProject":user.profile.userProject
                 }
-                # print(data)
             except:
                 data = PROFILE_MSG(msg=PROFILE_QUERY_FAIL)
             return HttpResponse(json.dumps(data), content_type='application/json')
@@ -79,42 +79,46 @@ def query_profile_others(request):
     try:
         # read request body from front end
         req = json.loads(request.body)
+        print(req)
         if request.environ.get('HTTP_X_TOKEN') is not None:
             HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
         else:
             HTTP_X_TOKEN = req['HTTP_X_TOKEN']           
  
-        if uid_exists(HTTP_X_TOKEN) is False:
-            PROFILE_MSG(msg=PROFILE_FILL_NO_USER)
-            return HttpResponse(json.dumps(data), content_type='application/json')
-        else:
-            try:
-                # create student profile and change student status to have already filled in profile info
-                # student and profile have the same uid
-                # otherLanguage is not empty
-                user=student.objects.get(email=req['email'])
- 
-                data = {
-                "code":1,
-                "msg":PROFILE_QUERY_SUCCESS,
-                "userDetails":{
-                                "name":user.profile.name,
-                                "major":user.profile.major,
-                                "grade":user.profile.grade,
-                                "skillLevel":user.profile.skillLevel,
-                                "leadInt":user.profile.leadInt,
-                                "fieldInt":user.profile.fieldInt,
-                                "prod":user.profile.prod,
-                                "expe":user.profile.exep,
-                                "mbti":user.profile.mbti,
-                                "email":user.profile.email
-                                },
-                "userProject":user.profile.userProject
-                }
-                print(data)
-            except:
-                data = PROFILE_MSG(msg=PROFILE_QUERY_FAIL)
-            return HttpResponse(json.dumps(data), content_type='application/json')
+        # if uid_exists(HTTP_X_TOKEN) is False:
+        #     print(HTTP_X_TOKEN)
+        #     data = PROFILE_MSG(msg=PROFILE_FILL_NO_USER)
+        #     return HttpResponse(json.dumps(data), content_type='application/json')
+        # else:
+        try:
+            # create student profile and change student status to have already filled in profile info
+            # student and profile have the same uid
+            # otherLanguage is not empty
+            print('!!!student')
+            user=student.objects.get(email=req['email'])
+            print(user)
+
+            data = {
+            "code":1,
+            "msg":PROFILE_QUERY_SUCCESS,
+            "userDetails":{
+                            "name":user.profile.name,
+                            "major":user.profile.major,
+                            "grade":user.profile.grade,
+                            "skillLevel":user.profile.skillLevel,
+                            "leadInt":user.profile.leadInt,
+                            "fieldInt":user.profile.fieldInt,
+                            "prod":user.profile.prod,
+                            "expe":user.profile.exep,
+                            "mbti":user.profile.mbti,
+                            "email":user.profile.email
+                            },
+            "userProject":user.profile.userProject
+            }
+            print(data)
+        except:
+            data = PROFILE_MSG(msg=PROFILE_QUERY_FAIL)
+        return HttpResponse(json.dumps(data), content_type='application/json')
     except Exception as e:
         data = PROFILE_MSG(msg=PROFILE_QUERY_FAIL)
         return HttpResponse(json.dumps(data), content_type='application/json')

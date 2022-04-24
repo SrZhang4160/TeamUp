@@ -39,19 +39,27 @@ class User(AbstractBaseUser):
 class instructor(models.Model):
     uid = models.CharField(max_length=200, null=True)
     name = models.CharField(max_length=200, null=True)
-    email = models.EmailField(unique=True, null=True)
+    email = models.CharField(max_length=200, null=True)
     password = models.CharField(max_length = 25, null=True)
     type = models.PositiveSmallIntegerField(default=1, null=True)
     bio = models.TextField(null=True)
     avatar = models.ImageField(null=True, default="avatar.svg")
     criteriaList = BuiltinJSONField(unique=False, null=True, default=list)
     group_selection = models.CharField(max_length = 25, null=True)
+    contactsList = BuiltinJSONField(unique=True, null=True)
+    messageList = BuiltinJSONField(unique=True, null=True)
 
-    def __str__(self):
-        return self.name
+    #def __str__(self):
+    #    return self.name
 
-ist = instructor(email="admin@jhu.edu", password="123456")
-ist.save()
+#ist = instructor(email="admin@jhu.edu", password="123456")
+#ist.save()
+
+#ins = instructor.objects.create(name='Instructor', avatar='tiger', type=1, password='123456', email='admin@jhu.edu')
+#ins.uid = ins.generate_key()
+#ins.save()
+
+
 
 class Profile(models.Model):
     # mandatory

@@ -1,5 +1,5 @@
 from django.http import HttpResponse, JsonResponse
-from .models import student, User, Project
+from .models import student, User, Project, Profile
 from .msg import *
 import json
 import re
@@ -13,7 +13,7 @@ def return_all_project(request):
         try:
             HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
         except:
-            HTTP_X_TOKEN = req['HTTP_X_TOKEN'] 
+            HTTP_X_TOKEN = req['HTTP_X_TOKEN']
         
         try:
             # current dummy search: with no inputword and selectword
@@ -83,6 +83,7 @@ def return_all_project(request):
                                         pass
                     except:
                         pass
+            # print(data)
             return HttpResponse(json.dumps(data), content_type='application/json')
         except:
             data = PROJECT_MSG(msg=PROJECT_RETURN_ALL_FAIL1) ####
@@ -94,8 +95,7 @@ def return_all_project(request):
 
 def project_lang_distribution(request):
     try:
-        req = json.loads(request.body)
-        
+        # req = json.loads(request.body)
         # if request.environ.get('HTTP_X_TOKEN') is not None:
         try:
             HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
@@ -119,23 +119,24 @@ def project_lang_distribution(request):
                         languages['otherLanguage'] += 1
  
             all_langs = sum([languages[key] for key in languages.keys()])
-            dis_langs = [{"name": key, "percentage":"{:.2f}".format(languages[key]/all_langs*100)} for key in languages.keys()]
+            dis_langs = [{"name": key, "percentage":round(languages[key]/all_langs*100,2)} for key in languages.keys()] #"{:.2f}".format(languages[key]/all_langs*100)
             data = {"code":1,
                     "msg":"suc",
                     "projectsLanguages":dis_langs
                     }
             return HttpResponse(json.dumps(data), content_type='application/json')
         except:
-            data = PROJECT_MSG(msg=PROJECT_RETURN_ALL_FAIL1) ####
+            data = PROJECT_MSG(msg=LANGUAGE_FAIL1) ####
             return HttpResponse(json.dumps(data), content_type='application/json')
         
     except Exception as e:
-        data = PROJECT_MSG(msg=PROJECT_RETURN_ALL_FAIL2) ###
+        data = PROJECT_MSG(msg=LANGUAGE_FAIL2) ###
         return HttpResponse(json.dumps(data), content_type='application/json')
 
 def student_interest_field_distribution(request):
     try:
-        req = json.loads(request.body)
+        # req = json.loads(request.body)
+        print('int1')
         
         # if request.environ.get('HTTP_X_TOKEN') is not None:
         try:
@@ -143,11 +144,13 @@ def student_interest_field_distribution(request):
         except:
             HTTP_X_TOKEN = req['HTTP_X_TOKEN'] 
         try:
-            all_students = student.objects.all()
+            print('START')
+            all_profiles = Profile.objects.all()
             interests = {}
-            for student in all_students:
+            for profile in all_profiles:
+                print('INTERESTT')
                 try:
-                    for _int in student.profile.fieldInt:
+                    for _int in profile.fieldInt:
                         if _int not in interests.keys():
                             interests[_int] = 1
                         else:
@@ -158,12 +161,26 @@ def student_interest_field_distribution(request):
             data = {"code":1,
                     "msg":"suc",
                     "interestedFields": dis_ints}
+            # print(data) # probably since there are no students now
+            # data = {"code":1,"msg":"suc",
+            # "interestedFields":[
+            # {"name":"Books","num":130.55},
+            # {"name":"health","num":230.55},
+            # {"name":"Music","num":330.55},
+            # {"name":"Education","num":320.55},
+            # {"name":"Grocery","num":260.55},
+            # {"name":"Sports","num":120.55},
+            # {"name":"Travel","num":420.55},
+            # {"name":"Lifestyle","num":230.55},
+            # {"name":"Utilties","num":180.55},
+            # {"name":"Others","num":269.45}
+            # ]}
             return HttpResponse(json.dumps(data), content_type='application/json')
 
         except:
-            data = PROJECT_MSG(msg=PROJECT_RETURN_ALL_FAIL1) ####
+            data = PROJECT_MSG(msg=INTEREST_FAIL1) ####
             return HttpResponse(json.dumps(data), content_type='application/json')
         
     except Exception as e:
-        data = PROJECT_MSG(msg=PROJECT_RETURN_ALL_FAIL2) ###
+        data = PROJECT_MSG(msg=INTEREST_FAIL2) ###
         return HttpResponse(json.dumps(data), content_type='application/json')

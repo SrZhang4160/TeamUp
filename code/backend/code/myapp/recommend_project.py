@@ -10,7 +10,7 @@ import numpy as np
 from numpy.linalg import norm
 
 try:
-    import umap.umap_ as umap
+    #import umap.umap_ as umap
     import hdbscan
     import sister
     import math
@@ -20,7 +20,8 @@ try:
     from k_means_constrained import KMeansConstrained
     sentence_embedder = sister.MeanEmbedding(lang="en")
 except:
-    print("Please install required packages")
+    print("Please install required packages") 
+    pass
 
 def generate_random_project(num):
     domains = {"keywords": ['Computer Science','Cognitive Science','Robotics','Psychology', 'Electrical Engineering'],
@@ -40,6 +41,29 @@ def generate_random_project(num):
     return dummpy_prjs, domains.keys()
 
 def recommend_project(request):
+    try:
+            # current dummy recommend: no request body, just return whatever
+        data = {"code":1,
+        "msg":PROJECT_RECOMMEND_SUCCESS,
+        "projectList":[{
+          "projectId":"aaa",
+          "projectName":"bbb",
+          "keywords":"CC",
+          "type":["IOS","Android"],
+          "skillWanted":"DDD"
+         },{
+          "projectId":"AAA",
+          "projectName":"BBB",
+          "keywords":"CCCC",
+          "type":["Web applocation"],
+          "skillWanted":"DDD"
+         }]}
+        return HttpResponse(json.dumps(data), content_type='application/json')
+        
+    except Exception as e:
+        data = PROJECT_MSG(msg=PROJECT_RECOMMEND_FAIL) ###
+        return HttpResponse(json.dumps(data), content_type='application/json')
+
     req = json.loads(request.body)
     
     if request.environ.get('HTTP_X_TOKEN') is not None:

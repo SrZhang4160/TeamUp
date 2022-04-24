@@ -12,6 +12,7 @@ def project_page(request):
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
         HTTP_X_TOKEN = req['HTTP_X_TOKEN']
+    print(HTTP_X_TOKEN)
 
     try:
         # get project id and user email
@@ -22,10 +23,12 @@ def project_page(request):
             print('req')
             project = Project.objects.get(projectId=req['projectId'])
             print("project search is ok")
-            if student.objects.get(uid=HTTP_X_TOKEN) is not None:
+
+            try: # student
+                print(HTTP_X_TOKEN)
                 user = student.objects.get(uid=HTTP_X_TOKEN)
                 print("student search is ok")
-            else:
+            except: # instructor
                 Is_Instructor = True
                 print("It is instructor")
         except:
@@ -65,6 +68,7 @@ def project_page(request):
             else: # user has no group
                 userRole = 3
         print('hh')
+        print(userRole)
 
         data =  {
             "code": 1,
@@ -85,7 +89,7 @@ def project_page(request):
                     "teamMemName": project.teamMemName
                     }
             }
-        print(data)
+        # print(data)
     except:
         data =  {
             "code": 0,

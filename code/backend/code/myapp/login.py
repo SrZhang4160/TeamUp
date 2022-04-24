@@ -37,6 +37,7 @@ def loginPage(request):
                                             name=user.name)
                 else:
                     data = LOGIN_RETURN_MSG(msg=LOGIN_PASSWD_WRONG)
+                print(data)
                 return HttpResponse(json.dumps(data), content_type='application/json')
             #If the instructor account exists
             else:
@@ -53,7 +54,9 @@ def loginPage(request):
                         data = LOGIN_RETURN_MSG(msg=LOGIN_PASSWD_WRONG)
                 else: 
                     data = LOGIN_RETURN_MSG(msg=LOGIN_NOT_EXIST)
-                    return HttpResponse(json.dumps(data), content_type='application/json') 
+                #import pdb;pdb.set_trace()
+                print(data)
+                return HttpResponse(json.dumps(data), content_type='application/json') 
             #User dose not exists
         except:
             data = LOGIN_RETURN_MSG(msg=LOGIN_ERROR)
