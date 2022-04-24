@@ -39,15 +39,27 @@ class User(AbstractBaseUser):
 class instructor(models.Model):
     uid = models.CharField(max_length=200, null=True)
     name = models.CharField(max_length=200, null=True)
-    email = models.EmailField(unique=True, null=True)
+    email = models.CharField(max_length=200, null=True)
     password = models.CharField(max_length = 25, null=True)
     type = models.PositiveSmallIntegerField(default=1, null=True)
     bio = models.TextField(null=True)
     avatar = models.ImageField(null=True, default="avatar.svg")
-    uid = models.CharField(max_length=200, null=True)
+    criteriaList = BuiltinJSONField(unique=False, null=True, default=list)
+    group_selection = models.CharField(max_length = 25, null=True)
+    contactsList = BuiltinJSONField(unique=True, null=True)
+    messageList = BuiltinJSONField(unique=True, null=True)
 
-    def __str__(self):
-        return self.name
+    #def __str__(self):
+    #    return self.name
+
+#ist = instructor(email="admin@jhu.edu", password="123456")
+#ist.save()
+
+#ins = instructor.objects.create(name='Instructor', avatar='tiger', type=1, password='123456', email='admin@jhu.edu')
+#ins.uid = ins.generate_key()
+#ins.save()
+
+
 
 class Profile(models.Model):
     # mandatory
@@ -78,8 +90,16 @@ class Profile(models.Model):
     
     def __str__(self):
         return self.name
- 
 
+class announcements(models.Model):
+    uid = models.CharField(max_length=200, null=True)
+    name = models.CharField(max_length=200, null=True)
+    val = models.CharField(max_length=5000, null=True)
+    releaseTime = models.CharField(max_length=200, null=True)
+
+    def generate_key(self):
+        return binascii.hexlify(os.urandom(20)).decode()
+        
 class student(models.Model):
     uid = models.CharField(max_length=200, null=True)
     name = models.CharField(max_length=200, null=True)
@@ -198,3 +218,22 @@ class Project(models.Model):
 
     def __str__(self):
         return self.projectName
+    
+class criteria(models.Model):
+    criteriaId = models.CharField(max_length=200, null=True)
+    criteriaName = models.CharField(max_length=200, null=True)
+    criteriaNum = models.SmallIntegerField(default=0, null=True)
+    criteriaPption = models.CharField(max_length=200, null=True)
+            
+class prj_group(models.Model):
+    groupTag = models.CharField(max_length=200, null=True)
+    groupinfo = BuiltinJSONField(unique=False, null=True, default=list)
+
+class contact(models.Model):
+    contactTag = models.CharField(max_length=200, null=True)
+    instructorName = models.CharField(max_length=200, null=True)
+    instructorEmail = models.CharField(max_length=200, null=True)
+    zoomLink = models.CharField(max_length=200, null=True)
+    Ta = BuiltinJSONField(unique=False, null=True, default=list)
+    officeHour  = BuiltinJSONField(unique=False, null=True, default=list)
+    

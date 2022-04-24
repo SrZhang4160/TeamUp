@@ -1,7 +1,7 @@
 from turtle import pd
 from django.http import HttpResponse, JsonResponse
 from rest_framework.authtoken.models import Token
-from .models import student, User, Project
+from .models import instructor, student, User, Project
 from .msg import *
 import json
 
@@ -12,15 +12,25 @@ def project_page(request):
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
         HTTP_X_TOKEN = req['HTTP_X_TOKEN']
+    print(HTTP_X_TOKEN)
 
     try:
         # get project id and user email
         print(req)
         all_projects = Project.objects.values()  
+        Is_Instructor = False
         try:
             print('req')
             project = Project.objects.get(projectId=req['projectId'])
-            user = student.objects.get(uid=HTTP_X_TOKEN)
+            print("project search is ok")
+
+            try: # student
+                print(HTTP_X_TOKEN)
+                user = student.objects.get(uid=HTTP_X_TOKEN)
+                print("student search is ok")
+            except: # instructor
+                Is_Instructor = True
+                print("It is instructor")
         except:
             try:
                 user = student.objects.get(uid=HTTP_X_TOKEN)
@@ -42,20 +52,23 @@ def project_page(request):
         print(project.teamLeader.email)
         print(project.teamMemName)
         print('!!')
-        print(user)
-        print('!!')
-        if project.teamLeader.email == user.email: # team leader
-            userRole = 1 
-        elif project.teamMemName is not None:
-            if user.email in [mem['eml'] for mem in project.teamMemName]: # team member
-                userRole = 2
-            else:
+        #print(user)
+        if Is_Instructor is True:
+            userRole = 0
+        else:
+            if project.teamLeader.email == user.email: # team leader
+                userRole = 1 
+            elif project.teamMemName is not None:
+                if user.email in [mem['eml'] for mem in project.teamMemName]: # team member
+                    userRole = 2
+                else:
+                    userRole = 4
+            elif user.projectId: # user has a group
                 userRole = 4
-        elif user.projectId: # user has a group
-            userRole = 4
-        else: # user has no group
-            userRole = 3
+            else: # user has no group
+                userRole = 3
         print('hh')
+        print(userRole)
 
         data =  {
             "code": 1,
@@ -76,7 +89,7 @@ def project_page(request):
                     "teamMemName": project.teamMemName
                     }
             }
-        print(data)
+        # print(data)
     except:
         data =  {
             "code": 0,

@@ -58,9 +58,10 @@ def return_student_with_proj_num(request):
                 for project in Project.objects.values() :
                     if project['teamMemName'] is not None:
                         for team_mem in project['teamMemName']:
-                            if team_mem['eml'] not in student_with_projects:
+                            if team_mem['eml'] not in student_with_projects and team_mem['eml'] != '':
                                 student_with_projects.append(team_mem['eml'])
 
+                print(student_with_projects)
                 data = STUDENT_PROJ_MSG(code=1, msg=STUDENT_PROJECT_NUM_QUERY_SUCCESS, numval=len(student_with_projects)) ####
                 return HttpResponse(json.dumps(data), content_type='application/json')
         except:
