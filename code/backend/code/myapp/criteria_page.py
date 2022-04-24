@@ -298,6 +298,7 @@ def criteria_group_page(request):
     #                 user_profiles.append(user_profile)
     #                 filter_students.append(student)
                 
+
     #     user_all_embeds = []
     #     for idx in range(len(user_profiles)):
     #         domain_val_embds = []
@@ -323,6 +324,32 @@ def criteria_group_page(request):
     #         #standard_embedding = umap.UMAP(random_state=42).fit_transform(np.asarray(user_all_embeds))
     #         #plt.scatter(standard_embedding[:, 0], standard_embedding[:, 1], c=kmeans_labels, s=1, cmap='Spectral');
     #         #plt.savefig('grouping_cluster.png')
+
+#         user_all_embeds = []
+#         for idx in range(len(user_profiles)):
+#             domain_val_embds = []
+#             for domain in domains:
+#                 embd_vector = sentence_embedder(user_profiles[idx][domain])
+#                 domain_val_embds.append(embd_vector)
+#                 ## currently only similarity, diff --> 1 / domain_val_embd
+#             weighted_embds = sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)])
+#             user_all_embeds.append(weighted_embds)
+#         print("Finish feature extraction")   
+#         # kmeans_labels = cluster.KMeans(n_clusters=10).fit_predict(np.asarray(dummpy_use_all_embeds)) # This is the kmeans without constrain
+#         # 
+#         clf = KMeansConstrained(
+#                 n_clusters=int(math.ceil(len(user_profiles)/7)),
+#                 size_min=5,
+#                 size_max=7,
+#                 random_state=42
+#                 )
+#         clf.fit_predict(np.asarray(user_all_embeds))
+#         #print(clf.cluster_centers_)
+#         kmeans_labels = clf.labels_
+#         if visualize:
+#             standard_embedding = umap.UMAP(random_state=42).fit_transform(np.asarray(user_all_embeds))
+#             plt.scatter(standard_embedding[:, 0], standard_embedding[:, 1], c=kmeans_labels, s=1, cmap='Spectral');
+#             plt.savefig('grouping_cluster.png')
 
     #     if not use_dummpy:
     #         all_students = student.objects.values()
