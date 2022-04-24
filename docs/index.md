@@ -738,6 +738,118 @@ Response example:
 ```diff
 + == Iteration 4 ==
 ```
+| API address | Request method| Description |
+| :----------- | :------------: | ------------: |
+| http://47.253.99.242/project_lang_distribution_api|   Post   |   Project Language stats |
+
+```diff
+Request parameters: 
+```
+>{ \
+> "HTTP_X_TOKEN": xx, \
+> }
+
+```diff
+Response example:
+```
+>{"code":1,"msg":"suc", \
+> "projectsLanguages":[{ \
+>  "name":"java", \
+>  "percentage":30.55 \
+> },{ \
+>  "name":"Python", \
+>  "percentage":69.45 \
+> }]}
+
+
+| API address | Request method| Description |
+| :----------- | :------------: | ------------: |
+| http://47.253.99.242/student_interest_field_distribution_api|   Post   |   Student Interest Field stats |
+```diff
+Request parameters: 
+```
+>{ \
+> "HTTP_X_TOKEN": xx, \
+> }
+
+```diff
+Response example:
+```
+>{"code":1,"msg":"suc", \
+> "interestedFields":[ \
+> {"name":"Books","num":130.55}, \
+> {"name":"health","num":230.55}, \
+> {"name":"Music","num":330.55}, \
+> {"name":"Education","num":320.55}, \
+> {"name":"Grocery","num":260.55}, \
+> {"name":"Sports","num":120.55}, \
+> {"name":"Travel","num":420.55}, \
+> {"name":"Lifestyle","num":230.55}, \
+> {"name":"Utilties","num":180.55}, \
+> {"name":"Others","num":269.45} \
+> ]}
+
+| API address | Request method| Description |
+| :----------- | :------------: | ------------: |
+| http://47.253.99.242/annos_create_msg_api|   Post   |   Instructor creates a new announcement |
+```diff
+Request parameters: 
+```
+>{ \
+> "HTTP_X_TOKEN": xx, \
+> "name":"AAAA", \
+> "val":"CCCCC" \
+> }
+
+```diff
+Response example:
+```
+>{"code":1,"msg":"suc", \
+> }]}
+
+
+| API address | Request method| Description |
+| :----------- | :------------: | ------------: |
+| http://47.253.99.242/annos_list_msg_api|   Post   |   Instructor gets a list of all previous announcements |
+```diff
+Request parameters: 
+```
+>{ \
+> "HTTP_X_TOKEN": xx, \
+> }
+
+```diff
+Response example:
+```
+>{"code":1,"msg":"suc", \
+> "announcements":[{ \
+> "id":"AAA","name":"AAA","val":"AAA", \
+> "releaseTime":"2022-04-06 12:33"},{ \
+>  "id":"BBB","name":"BBB","val":"BBB", \
+> "releaseTime":"2022-04-08 12:33"}]}
+
+
+| API address | Request method| Description |
+| :----------- | :------------: | ------------: |
+| http://47.253.99.242/annos_retrieve_msg_api|   Post   |   Instructor retrieves a particular announcement |
+```diff
+Request parameters: 
+```
+>{ \
+> "HTTP_X_TOKEN": xx, \
+> }
+
+```diff
+Response example:
+```
+>{"code":1,"msg":"suc", \
+> "announcements":[{ \
+> "id":"AAA","name":"AAA","val":"AAA", \
+> "releaseTime":"2022-04-06 12:33"},{ \
+>  "id":"BBB","name":"BBB","val":"BBB", \
+> "releaseTime":"2022-04-08 12:33"}]} \
+
+
 
 ## About Us!
 
