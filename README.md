@@ -32,7 +32,7 @@ Please click on the following links:
 
 ## Installing / Getting started
 
-A quick introduction of the minimal setup you need to get the app up & running on a local computer.
+A quick introduction of the minimal setup you need to get the app up & running on a local computer
 
 ```shell
 Usage Guide
