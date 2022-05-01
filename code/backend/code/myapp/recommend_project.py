@@ -2,61 +2,48 @@ from django.http import HttpResponse, JsonResponse
 from .models import student, User, Project
 from .msg import *
 import json
-import random
-import binascii
-import os
 from numpy import dot
 import numpy as np
 from numpy.linalg import norm
 
 try:
     #import umap.umap_ as umap
-    import hdbscan
-    import sister
+    import numpy as np
     import math
-    import sklearn.cluster as cluster
-    from sklearn.metrics import adjusted_rand_score, adjusted_mutual_info_score
-    from sister.word_embedders import Word2VecEmbedding
+    import random
     from k_means_constrained import KMeansConstrained
-    sentence_embedder = sister.MeanEmbedding(lang="en")
+    print('kmeans')
+    import gensim.downloader as api
+    print('api')
+    # wv_from_bin = api.load("glove-wiki-gigaword-50")
+    # print(wv_from_bin['ios'])
 except:
-    print("Please install required packages") 
+    print("NOT WORKING!")
     pass
 
-def generate_random_project(num):
-    domains = {"keywords": ['Computer Science','Cognitive Science','Robotics','Psychology', 'Electrical Engineering'],
-               "type": ['Android','Web','Mobile','iOS'],
-               "skillWanted": ['C++','Python','Jave','C#','Lua']
-              }
-    dummpy_prjs = []
-    for i in range(num):
-        dummpy_prj = {}
-        dummpy_prj["keywords"] = random.sample(domains["keywords"], 2)
-        dummpy_prj["type"] = random.sample(domains["type"], 2)
-        dummpy_prj["skillWanted"] = random.choice(domains["skillWanted"])
-        dummpy_prj["projectId"] = binascii.hexlify(os.urandom(20)).decode()
-        dummpy_prj["projectName"] = binascii.hexlify(os.urandom(10)).decode()
-        dummpy_prjs.append(dummpy_prj)
-    print(80*"-"+"Generated Projects")
-    return dummpy_prjs, domains.keys()
 
 def recommend_project(request):
+    def cos_sim(a, b):
+        dot_product = np.dot(a, b) # x.y
+        norm_a = np.linalg.norm(a) #|x|
+        norm_b = np.linalg.norm(b) #|y|
+        return dot_product / (norm_a * norm_b)
     try:
             # current dummy recommend: no request body, just return whatever
         data = {"code":1,
         "msg":PROJECT_RECOMMEND_SUCCESS,
         "projectList":[{
           "projectId":"aaa",
-          "projectName":"bbb",
-          "keywords":"CC",
-          "type":["IOS","Android"],
-          "skillWanted":"DDD"
+          "projectName":"Jazz For All",
+          "keywords":"Music",
+          "type":["Android","IOS"],
+          "skillWanted":"Python,Java"
          },{
           "projectId":"AAA",
-          "projectName":"BBB",
-          "keywords":"CCCC",
-          "type":["Web applocation"],
-          "skillWanted":"DDD"
+          "projectName":"Project name",
+          "keywords":"Keywords",
+          "type":["Web","Android"],
+          "skillWanted":"Skill Wanted"
          }]}
         return HttpResponse(json.dumps(data), content_type='application/json')
         
@@ -64,7 +51,7 @@ def recommend_project(request):
         data = PROJECT_MSG(msg=PROJECT_RECOMMEND_FAIL) ###
         return HttpResponse(json.dumps(data), content_type='application/json')
 
-    req = json.loads(request.body)
+    # req = json.loads(request.body)
     
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
@@ -72,49 +59,56 @@ def recommend_project(request):
         HTTP_X_TOKEN = req['HTTP_X_TOKEN']
     
     try:
-        dummy_student = {
-                        "name":"SAN ZHANG",
-                        "major":"COMPUTER SCIENCE",
-                        "grade":"GRAD",
-                        "skillLevel":[
-                            {"skillName":"JAVA","level":"LOW"},
-                            {"skillName":"C++","level":"HIGH"}
-                            ],
-                        "leadInt":"HIGH",
-                        "fieldInt":["XX","YY"],
-                        "prod":"WEB",
-                        "exep":"intern",
-                        "mbti":"estj-T",
-                        "prefer" : "aaa@jhu.edu",
-                        "preferNot" :  "aaa@jhu.edu",
-                        "email":"YYY@JHU.EDU"
-                        }
-        dummpy_projects, domains_keys = generate_random_project(10)
-
-        all_projects = Project.objects.values()
         user = student.objects.get(uid=HTTP_X_TOKEN)
-        embd_student_fieldInt = sentence_embedder(" ".join(user.fieldInt))
-        embd_student_skillLevell = sentence_embedder(" ".join([item['skillName'] for item in user.skillLevel]))
-        embd_student = (embd_student_fieldInt + embd_student_skillLevell) / 2 # Norm
+        print(11)
+        user_profile = {"name": user.name,
+                        "eml": user.email,
+                        "Field of Interest": ' '.join(user.profile.fieldInt),
+                        "Type of End Product": user.profile.prod,
+                        "Programming Language": ' '.join([i["skillName"] for i in user.profile.skillLevel if '#' not in i["skillName"]])}
 
+        domain_val_embds = []
+        for domain in ["Field of Interest","Type of End Product","Programming Language"]:
+            embd_vector = sum([wv_from_bin[i.lower()] for i in user_profile[domain].split()])/len(user_profile[domain].split()) # 9*300
+            domain_val_embds.append(embd_vector)
+        stu = sum(domain_val_embds)
+            ## currently only similarity, diff --> 1 / domain_val_embd       300 each
+
+        # user = student.objects.get(uid=HTTP_X_TOKEN)
+        # embd_student_fieldInt = sentence_embedder(" ".join(user.fieldInt))
+        # embd_student_skillLevell = sentence_embedder(" ".join([item['skillName'] for item in user.skillLevel]))
+        # embd_student = (embd_student_fieldInt + embd_student_skillLevell) / 2 # Norm
+        all_projects = Project.objects.values()
+        print(22)
+        all_profiles = []
+        for proj in all_projects:
+            all_profiles.append({"id": proj.projectId,
+                            "projectName": proj.projectName,
+                            "skillWanted": proj.skillWanted,
+                            "Field of Interest": proj.keywords,
+                            "Type of End Product": ' '.join(proj.type),
+                            "Programming Language": ' '.join([i for i in proj.intendedLanguage if '#' not in i])})
         prj_all_embeds = []
         for idx in range(len(all_projects)):
+    ### type, intendedLanguage: list(str); keywords: str
             domain_val_embds = []
-            domain_val_embds.append(sentence_embedder(" ".join(all_projects[idx].keywords)))
-            domain_val_embds.append(sentence_embedder(" ".join(all_projects[idx].type)))
-            domain_val_embds.append(sentence_embedder(" ".join(all_projects[idx].skillWanted)))
-            avg_embds = sum([domain_val_embd*(1/3) for domain_val_embd in domain_val_embds])
-            prj_all_embeds.append(avg_embds)
+            for domain in ["Field of Interest","Type of End Product","Programming Language"]:
+                embd_vector = sum([wv_from_bin[i.lower()] for i in all_profiles[idx][domain].split()])/len(all_profiles[idx][domain].split()) # 9*300
+                domain_val_embds.append(embd_vector)
+            domain_val_embds = sum(domain_val_embds)
+            prj_all_embeds.append(domain_val_embds)
 
-        cos_sim = dot(embd_student, np.transpose(np.asarray(prj_all_embeds)))/(norm(embd_student)*norm(np.transpose(np.asarray(prj_all_embeds))))
-        top3_project_ids = np.argsort(cos_sim)[:3]
+        print(33)
+        cossim = [cos_sim(stu,p) for p in prj_all_embeds]
+        print(44)
+        top3_project_ids = np.argsort(cos_sim)[::-1][:min(3,len(cossim))]
         proj_infos = []
         for top3_project_id in top3_project_ids:
-            proj_info = {"projectId": all_projects[top3_project_id]["projectId"],
-                         "projectName": all_projects[top3_project_id]["projectName"],
-                         "keywords": all_projects[top3_project_id]["keywords"],
-                         "type": all_projects[top3_project_id]["type"],
-                         "skillWanted": all_projects[top3_project_id]["skillWanted"],}
+            proj_info = {"projectId": all_profiles[top3_project_id]["id"],
+                         "projectName": all_profiles[top3_project_id]["projectName"],
+                         "keywords": all_profiles[top3_project_id]["Field of Interest"],
+                         "type": all_profiles[top3_project_id]["Type of End Product"],
+                         "skillWanted": all_profiles[top3_project_id]["skillWanted"],}
             proj_infos.append(proj_info)
         data = {"code":1,
                 "msg":PROJECT_RECOMMEND_SUCCESS,

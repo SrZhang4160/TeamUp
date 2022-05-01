@@ -2,13 +2,13 @@ import email
 from turtle import pd
 from django.http import HttpResponse, JsonResponse
 from rest_framework.authtoken.models import Token
-from .models import student, User, Project
+from .models import instructor, student, User, Project
 from .msg import *
 import json
 from datetime import datetime
 
 def uid_exists(uid):
-    return student.objects.filter(uid=uid).exists()
+    return student.objects.filter(uid=uid).exists() or instructor.objects.filter(uid=uid).exists()
 
 def send_message(request):
     try:
@@ -20,8 +20,16 @@ def send_message(request):
         else:
             HTTP_X_TOKEN = req['HTTP_X_TOKEN']
         
-        sender = student.objects.get(uid=HTTP_X_TOKEN)
-        receiver = student.objects.get(email=req['sendTo'])
+        ### now both sender and receiver could be instructor
+        try:
+            sender = student.objects.get(uid=HTTP_X_TOKEN)
+        except:
+            sender = instructor.objects.get(uid=HTTP_X_TOKEN)
+        try:
+            receiver = student.objects.get(email=req['sendTo'])
+        except:
+            receiver = instructor.objects.get(email=req['sendTo'])
+
         if receiver.messageList is None: receiver.messageList = []
         now = datetime.now()
         # Receiver : add this message
@@ -96,15 +104,18 @@ def retrieve_contact(request):
             HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
         else:
             HTTP_X_TOKEN = req['HTTP_X_TOKEN'] 
-        print(req)
-        print(HTTP_X_TOKEN)
+        # print(req)
+        # print(HTTP_X_TOKEN)
         
         if uid_exists(HTTP_X_TOKEN) is False:
             data = PROJECT_MSG(msg=PROJECT_CREATION_NO_USER)
             return HttpResponse(json.dumps(data), content_type='application/json')
         else:
             print('1')
-            contact = student.objects.get(uid=HTTP_X_TOKEN)
+            try:
+                contact = student.objects.get(uid=HTTP_X_TOKEN)
+            except:
+                contact = instructor.objects.get(uid=HTTP_X_TOKEN)
             print('2')
             data = {
                 "code":1,
@@ -131,7 +142,10 @@ def retrieve_message(request):
             PROJECT_MSG(msg=PROJECT_CREATION_NO_USER)
             return HttpResponse(json.dumps(data), content_type='application/json')
         else:
-            me = student.objects.get(uid=HTTP_X_TOKEN)
+            try:
+                me = student.objects.get(uid=HTTP_X_TOKEN)
+            except:
+                me = instructor.objects.get(uid=HTTP_X_TOKEN)
             email_other = req['email']
             return_msg = []
             for msg in me.messageList:
