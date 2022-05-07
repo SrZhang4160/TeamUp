@@ -144,7 +144,7 @@ python manage.py runserver
   ## Step 4: 'http://127.0.0.1:8000/del_project_api'
   ```
   
-  To create new instance of instructor account before running server.
+  To create new instance of instructor account before running server (Run once for each email, do not repeat create account using same email address).
   ```bash
   echo "import os;from myapp.models import instructor;import binascii; ins = instructor.objects.get_or_create(name='Instructor', avatar='tiger', type=1, password='123456', defaults={'email':'admin@jhu.edu'}, uid=binascii.hexlify(os.urandom(20)).decode())" | python manage.py shell
   ```
