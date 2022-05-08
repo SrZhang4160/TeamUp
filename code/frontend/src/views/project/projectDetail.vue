@@ -1,6 +1,6 @@
 <template>
   <div class="projectDetaile">
-    <el-card class="box-card">
+    <el-card class="box-card" v-if="isShow">
       <el-form ref="addFormList" label-width="150px" :model="detaileList">
         <div class="title">Project name:{{ detaileList.projectName }}</div>
         <div class="box">
@@ -14,21 +14,21 @@
             </div>
             <el-form-item label="keywords:" prop="keywords">
               <!-- <el-input v-model="detaileList.keywords"></el-input> -->
-              <div>{{ detaileList.keywords }}</div>
+              <div style="font-size: 24px;color: rgb(64, 158, 255);font-weight: 100;">{{ detaileList.keywords }}</div>
             </el-form-item>
             <el-form-item label="Intended language:" prop="language">
-              <span v-for="(item,index) in detaileList.intendedLanguage" :key="index">{{ item }}
-                <span>&#8194;&#8194;</span>
+              <span  style="font-size: 24px;color: rgb(64, 158, 255);font-weight: 100;" v-for="(item,index) in detaileList.intendedLanguage" :key="index">{{ item }}
+                <span>&#8194;&#8194;</span><span v-html="'&nbsp;&nbsp;'"></span>
               </span>
             </el-form-item>
             <el-form-item label="Type:" prop="Type">
-              <span v-for="(item,index) in detaileList.type" :key="index">{{ item }}
-                <span>&#8194;&#8194;</span>
+              <span  style="font-size: 24px;color: rgb(64, 158, 255);font-weight: 100;" v-for="(item,index) in detaileList.type" :key="index">{{ item }}
+                <span>&#8194;&#8194;</span><span v-html="'&nbsp;&nbsp;'"></span>
               </span>
             </el-form-item>
             <el-form-item label="Skill wanted:" prop="wanted">
               <!-- <el-input v-model="detaileList.other"></el-input> -->
-              <div>{{ detaileList.skillWanted }}</div>
+              <div style="">{{ detaileList.skillWanted }}</div>
             </el-form-item>
           </div>
           <div class="right">
@@ -51,8 +51,12 @@
               </div>
             </div>
             <el-form-item class="form_btn">
+              <!-- 0教师 -->
+              <el-button v-if="userRole==0" size="small" type="primary" @click="sendMsg(detaileList.teamLeader)">Send Message</el-button>
+              <!-- 1组长 2组员 -->
               <el-button v-if="userRole==1||userRole==2" size="small" type="primary" @click="edit()">Edit</el-button>
               <el-button v-if="userRole==2" size="small" type="primary" @click="leave()">Leave Group</el-button>
+              <!-- 3无组人员 4其他组人员 -->
               <el-button v-if="userRole==3||userRole==4" size="small" type="primary" @click="join()">Apply</el-button>
               <el-button v-if="userRole==1" size="small" type="primary" @click="terminate()">Terminate</el-button>
             </el-form-item>
@@ -60,6 +64,7 @@
         </div>
       </el-form>
     </el-card>
+    <div v-else class="messageTitle">You have not join any project yet,<br/>please find a project team in the main lobby</div>
   </div>
 </template>
 <script>
@@ -82,7 +87,8 @@ export default {
       // },
       projectId: '',
       detaileList: {},
-      userRole: null
+      userRole: null,
+      isShow:null,
     }
   },
   created() {
@@ -150,15 +156,42 @@ export default {
         projectId: this.projectId
       }
       projectDetails(params).then(res => {
+        if(res.project.projectId&&res.project.projectId.length>0){
+
         this.detaileList = res.project
         this.userRole = res.userRole
+        this.isShow=true
+        }else{
+        this.isShow=false
+
+        }
       })
+    },
+    sendMsg(email) {
+      const routerJump = this.$router.resolve({
+        path: '/message/index',
+        query: {
+          email: email
+        }
+      })
+      window.open(routerJump.href, '_blank')
     }
   }
 }
 </script>
 <style lang="scss" scoped>
 .projectDetaile{
+  .messageTitle{
+    width: 50%;
+    font-size: 30px;
+    font-weight: 600;
+    margin: 100px auto;
+    // border: 1px solid red;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 60px
+  }
     .title{
         font-size: 29px;
         font-weight: 600;

@@ -74,10 +74,26 @@ export const constantRoutes = [
       component: () => import('@/views/stinfo/viewxx.vue'),
       meta: {
         title: 'Personal info',
-        icon: 'form'
+        icon: 'form',
+          authority:0
       }
     }]
   },
+
+
+  // {
+  //   path: '/projectName', // personal info
+  //   component: Layout,
+  //   children: [{
+  //     path: 'projectname',
+  //     name: 'projectname',
+  //     component: () => import('@/views/dashboard/projectname.vue'),
+  //     meta: {
+  //       title: 'projectname',
+  //       icon: 'form'
+  //     }
+  //   }]
+  // },
 
   {
     path: '/txxx/index', // getstudent info
@@ -157,7 +173,23 @@ export const constantRoutes = [
       component: () => import('@/views/findTeammates/index'),
       meta: {
         title: 'Find Teammates',
-        icon: 'form'
+        icon: 'form',
+         authority:0,
+      }
+    }]
+  },
+
+  {
+    path: '/studentsinfo', // 查询用户列表
+    component: Layout,
+    children: [{
+      path: 'index',
+      name: 'Students Info',
+      component: () => import('@/views/findTeammates/teach'),
+      meta: {
+        title: 'Students Info',
+        icon: 'form',
+         authority:1,
       }
     }]
   },
@@ -170,7 +202,8 @@ export const constantRoutes = [
       component: () => import('@/views/project/projectDetail.vue'),
       meta: {
         title: 'My group',
-        icon: 'form'
+        icon: 'form',
+          authority:0
       }
     }]
   },
@@ -257,10 +290,25 @@ export const constantRoutes = [
       component: () => import('@/views/message/index'),
       meta: {
         title: 'Message',
-        icon: 'form'
+        icon: 'form',
+        // authority:0,
       }
     }]
   },
+  // {
+  //   path: '/annoucement', // 主页 项目列表
+  //   component: Layout,
+  //   hidden: true,
+  //   children: [{
+  //     path: 'index',
+  //     name: 'Annoucement',
+  //     component: () => import('@/views/annoucement/index.vue'),
+  //     meta: {
+  //       title: 'Annoucement',
+  //       icon: 'form'
+  //     }
+  //   }]
+  // },
   {
     path: '/teammatesDetail', // 学生详情
     component: Layout,
@@ -275,19 +323,81 @@ export const constantRoutes = [
       }
     }]
   },
+
   {
     path: '/contact', // Contact
     component: Layout,
     children: [{
       path: 'index',
-      name: 'Contact',
+      name: 'Contact us',
       component: () => import('@/views/contact/index.vue'),
       meta: {
-        title: 'Contact',
-        icon: 'form'
+        title: 'Contact us',
+        icon: 'form',
+         // authority:0,
       }
     }]
   },
+  
+  // {
+  //   path: '/contactTer', // Contact
+  //   component: Layout,
+  //   children: [{
+  //     path: 'index',
+  //     name: 'ContactTer',
+  //     component: () => import('@/views/contact/index.vue'),
+  //     meta: {
+  //       title: 'Contact us',
+  //       icon: 'form',
+  //        authority:1,
+  //     }
+  //   }]
+  // },
+
+    {
+      path: '/editcontact', // Contact
+      component: Layout,
+      hidden: true,
+      children: [{
+        path: 'index',
+        name: 'editContact',
+        component: () => import('@/views/contact/editcontact.vue'),
+        meta: {
+          title: 'editcontact',
+          icon: 'form'
+        }
+      }]
+    },
+
+  {
+    path: '/annoucement', // Contact
+    component: Layout,
+    children: [{
+      path: 'index',
+      name: 'annoucement',
+      component: () => import('@/views/annoucement/index.vue'),
+      meta: {
+        title: "Annoucement",
+        icon: 'form',
+        authority:1,
+      }
+    }]
+  },
+  {
+    path: '/recommendation', // Contact
+    component: Layout,
+    children: [{
+      path: 'index',
+      name: 'recommendation',
+      component: () => import('@/views/recommendation/index.vue'),
+      meta: {
+        title: `Prof recommendation`,
+        icon: 'form',
+          authority:0,
+      }
+    }]
+  },
+
   // 系统自带 用不上
   {
     path: '/form', // 系统自带 用不上
@@ -383,8 +493,50 @@ export const constantRoutes = [
       }
     }]
   },
-
-  // 404 page must be placed at the end !!!
+  {
+        path: '/postedGroup', // 编辑分组 结果页、提示页
+        component: Layout,
+        redirect: '/postedGroup',
+        children: [{
+            path: 'postedGroup',
+            name: 'PostedGroup',
+            component: () => import('@/views/posted/index'),
+            meta: {
+              title: 'Grouping recommendation',
+              icon: 'form',
+              authority:1
+            }
+          },
+        ]
+      },
+      {
+        path: '/preview', //预览页
+        component: Layout,
+        hidden: true,
+        children: [{
+          path: 'preview',
+          name: 'Preview',
+          component: () => import('@/views/posted/preview.vue'),
+          meta: {
+            title: 'preview',
+            icon: 'form'
+          }
+        }]
+      },
+      {
+        path: '/editpreview', // 编辑分组 编辑操作页
+        component: Layout,
+        hidden: true,
+        children: [{
+          path: 'editpreview',
+          name: 'editpreview',
+          component: () => import('@/views/posted/editPreview.vue'),
+          meta: {
+            title: 'editpreview',
+            icon: 'form'
+          }
+        }]
+      },
   {
     path: '*',
     redirect: '/404',

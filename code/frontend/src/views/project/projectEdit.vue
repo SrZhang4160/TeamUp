@@ -10,7 +10,7 @@
               <div class="left_top">
                   <div class="Introduction">
                     <el-form-item label="Project Introduction:" prop="Introduction">
-                      <el-input v-model="projectForm.projectIntroduction" type="textarea" :rows="8"></el-input>
+                      <el-input v-model="projectForm.projectIntroduction" type="textarea"></el-input>
                     </el-form-item>
                   </div>
                   <div class="AppliedList">
@@ -49,7 +49,10 @@
               </el-checkbox-group>
             </el-form-item>
             <el-form-item label="Skill wanted:" prop="other">
-              <el-input v-model="projectForm.skillWanted"></el-input>
+              <div class="skillwanted">
+                 <el-input v-model="projectForm.skillWanted" type="textarea"></el-input>
+              </div>
+             
             </el-form-item>
           </div>
           <div class="right">
@@ -58,6 +61,7 @@
                 <div class="right_title">Team name:</div>
                 <el-input v-model="projectForm.teamName"></el-input>
               </div>
+             
               <div class="right_box">
                 <div class="right_titles">Leader:</div>
                 <div class="right_con"><div>{{projectForm.teamLeaderName}}</div>{{projectForm.teamLeader}}</div>
@@ -66,10 +70,12 @@
                 <div class="right_title">Member{{index+1}}:</div>
                 <div>
                   <div>{{item.name}}</div>
-                  <el-input v-model='projectForm.teamMemName[index].eml' :disabled="userRole==1?false:true"></el-input>
+                  
+                  <el-input v-model='projectForm.teamMemName[index].eml' :disabled="userRole==1?false:userRole==0&&item.eml.length>0&&item.choose?true:false"></el-input>
                   <i class="el-icon-delete" v-if="userRole==1" @click="deleteMember(index)"></i>
                 </div>
               </div>
+            <el-button type="primary" @click="addss" v-if="userRole==1">+</el-button>
             </div>
             <el-form-item class="form_btn">
               <el-button size="small" type="primary" @click="save()">Save</el-button>
@@ -107,6 +113,9 @@ export default {
       this.getDetail()
   },
   methods: {
+    addss(){
+      this.projectForm.teamMemName.push({ eml:""})
+    },
       intendedLanguageChange(val){
         //   console.log(val);
           this.projectForm.intendedLanguage=val
@@ -121,6 +130,17 @@ export default {
             }
             projectEdit(params).then(res=>{
                 this.projectForm=res.project
+                let arr=[]
+                res.project.teamMemName.forEach((item,indedx)=>{
+                  let obj={
+                    ...item,
+                    choose:res.userRole==0&&item.eml.length>0?true:false
+                  }
+                  arr.push(obj)
+                })
+                res.project.teamMemName=arr
+
+              console.log(res.project.teamMemName,"res.project");
                 this.userRole=res.userRole
             })
         },
@@ -128,7 +148,10 @@ export default {
             this.projectForm.teamMemName.splice(index,1)
         },
     save() {
-        console.log(this.projectForm.intendedLanguage);
+        this.projectForm.teamMemName.forEach((item,index)=>{
+         delete item.choose
+        })
+        // return
         let params={
             projectId:this.projectId,
             projectName:this.projectForm.projectName,
@@ -155,6 +178,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.skillwanted{
+  ::v-deep .el-textarea__inner{
+    height: 180px;
+    overflow-y: scroll;
+    resize: none
+  }
+}
 .projectDetaile {
     .appliedList{
         border: 1px solid #ccc;
@@ -163,6 +193,7 @@ export default {
         padding:10px;
         border-radius: 5px;
         background: white;
+        overflow-y:  scroll !important;
         p{
             display: flex;
             height: 16px;
@@ -176,6 +207,15 @@ export default {
       .left_top {
         display: flex;
         justify-content: space-between;
+        .Introduction{
+          // border: 1px solid red;
+          ::v-deep .el-textarea__inner{
+            width: 195px;
+            height: 180px;
+            overflow-y: scroll;
+            resize: none;
+          }
+        }
       }
     }
   }
@@ -201,6 +241,7 @@ export default {
     border-radius: 10px;
     margin-bottom: 20px;
     background: #F7F7FF;
+    overflow-y: scroll !important;
     .right_box{
         display: flex;
          margin-top: 15px;

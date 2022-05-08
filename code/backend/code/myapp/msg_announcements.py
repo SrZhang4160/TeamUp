@@ -37,6 +37,7 @@ def annos_list_msg(request):
                 else:
                     retrun_anno[anno_k] = anno[anno_k]
             return_all_anns.append(retrun_anno)
+        print(return_all_anns)
         data = {"code":1,
                 "msg":"suc",
                 "announcements":return_all_anns[::-1]}
@@ -77,15 +78,28 @@ def annos_latest_msg(request):
         # get project id and user email
         all_anns = announcements.objects.values() 
         sorted_list = sorted(all_anns, key=lambda t: datetime.strptime(t['releaseTime'], "%Y-%m-%d %H:%M:%S"))
-        anno_latest = sorted_list[-1]
+        annos_nodup = []
+        for ann in sorted_list[::-1]:
+            if annos_nodup == [] or ann['val'] != annos_nodup[-1]['val']:
+                annos_nodup.append({
+                            "name":ann['name'],
+                            "val":ann['val'],
+                            "releaseTime": ann['releaseTime']
+                            })
+
+        # print(annos_nodup[:3] if len(annos_nodup) > 3 else annos_nodup)
         data = {"code":1,
                 "msg":"suc",
-                "announcement":{
-                            "name":anno_latest['name'],
-                            "val":anno_latest['val'],
-                            "releaseTime": anno_latest['releaseTime']
-                            }
+                "announcements":annos_nodup[:3] if len(annos_nodup) > 3 else annos_nodup
                 }
+        # data = {"code":1,
+        #         "msg":"suc",
+        #         "announcements":{
+        #                     "name":anno_latest['name'],
+        #                     "val":anno_latest['val'],
+        #                     "releaseTime": anno_latest['releaseTime']
+        #                     }
+        #         }
         return HttpResponse(json.dumps(data), content_type='application/json')
     except:
         data =  {"code": 0, "msg": "fail"}

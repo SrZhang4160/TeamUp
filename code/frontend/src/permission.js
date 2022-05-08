@@ -22,7 +22,7 @@ router.beforeEach(async(to, from, next) => {
 
   if (hasToken) {
     // 有token
-    console.log(hasToken);
+    //console.log(hasToken);
     localStorage.setItem('token', JSON.stringify(hasToken));
     if (to.path === '/login') {
       // if is logged in, redirect to the home page

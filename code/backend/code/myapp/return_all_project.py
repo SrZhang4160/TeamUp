@@ -148,7 +148,7 @@ def student_interest_field_distribution(request):
             all_profiles = Profile.objects.all()
             interests = {}
             for profile in all_profiles:
-                print('INTERESTT')
+                # print('INTERESTT')
                 try:
                     for _int in profile.fieldInt:
                         if _int not in interests.keys():

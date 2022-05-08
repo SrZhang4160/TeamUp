@@ -118,7 +118,7 @@ export default {
       }
       const { inputword, selectword } = params
       // params
-      console.log('fetchData start')
+      //console.log('fetchData start')
       getList({
         inputword: inputword,
         selectword: selectword

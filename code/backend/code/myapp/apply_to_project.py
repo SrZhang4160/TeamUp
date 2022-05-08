@@ -30,28 +30,32 @@ def apply_to_project(request):
 
                 if project.applied_stu is None:
                     project.applied_stu = []
+                print(project.applied_stu)
+                # project.applied_stu = []
+                # project.save()
                     
                 # --> check user status 
                 print('!!!',user)
                 if user.projectId: # user has a group
                     print('-1')
                     return_msg = "you are member/leader of other project, need to exit/terminate current project to join new project"
-                elif project.applied_stu.count(user) is not None: # user has applied for this project
+                elif {"name": user.name, "eml": user.email} in project.applied_stu: # user has applied for this project
                     return_msg = PROJECT_APPLY_REPEAT
                 else:# user has no group
                     print('0')
                     return_msg = PROJECT_APPLY_SUCCESS
                 print('1') 
                 
+                if return_msg == PROJECT_APPLY_SUCCESS: # only when APPLY_SUCCESS do the following:
                 # "you are member/leader of other project, need to exit/terminate current project to join new project",
-                if {"name": user.name, "eml": user.email} not in project.applied_stu:
-                    project.applied_stu.append({"name": user.name, "eml": user.email})
-                print(project.applied_stu)
-                if user.applied_project is None:
-                    user.applied_project = []
-                # print(user.applied_project)
-                if req['projectId'] not in user.applied_project:
-                    user.applied_project.append(req['projectId'])
+                    if {"name": user.name, "eml": user.email} not in project.applied_stu:
+                        project.applied_stu.append({"name": user.name, "eml": user.email})
+                    print(project.applied_stu)
+                    if user.applied_project is None:
+                        user.applied_project = []
+                    # print(user.applied_project)
+                    if req['projectId'] not in user.applied_project:
+                        user.applied_project.append(req['projectId'])
                 # print(user.applied_project)
                 
                 try:

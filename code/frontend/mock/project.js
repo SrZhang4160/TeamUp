@@ -22,7 +22,8 @@ const data = Mock.mock({
     'saveEditProject': {
       code: 1,
       msg: '接口查询说明'
-    }
+    },
+    'bulletin':[],
   }
 
 )
@@ -148,7 +149,7 @@ module.exports = [{
       return {
         code: 1,
         msg: "获取成功",
-        userRole: 1,
+        userRole: 2,
         project: {
           projectId: "aaa",
           projectName: "bbb",
@@ -213,7 +214,7 @@ module.exports = [{
       return {
         code: 1,
         msg: "获取成功",
-        userRole: 1,
+        userRole: 0,
         project: {
           projectId: "aaa",
           projectName: "bbb",
@@ -232,6 +233,19 @@ module.exports = [{
           }, {
             name: "ccc",
             eml: "CCC@jhu.edu"
+          },{
+            name: "",
+            eml: ""
+          }, {
+            name: "",
+            eml: ""
+          },
+          {
+            name: "",
+            eml: ""
+          }, {
+            name: "",
+            eml: ""
           }],
           appliedList: [{
             name: "d",
@@ -253,6 +267,35 @@ module.exports = [{
       return {
         code: 1,
         msg: "处理成功"
+      }
+    }
+  },
+  //公告栏
+  {
+    // url: '/aa',
+    url: '/vue-admin-template/project/bulletin',
+    type: 'post',
+    response: config => {
+      const items = data.bulletin
+      return {
+        code: 1,
+        msg: "suc",
+        announcementList:[{
+          name:'bbb',
+          val:'aaaaaaaaaaaaaa',
+          
+          releaseTime:'2022-04-06 12:34'
+        },{
+          name:'bbb',
+          val:'bbbbbbbbbbbb',
+          
+          releaseTime:'2022-04-06 12:34'
+        },{
+          name:'bbb',
+          val:'ccccccccccccc',
+          
+          releaseTime:'2022-04-06 12:34'
+        }]
       }
     }
   },

@@ -23,34 +23,26 @@ def userinfo(request):
             
             if student.objects.filter(uid=token).exists() is True:
                 user=student.objects.get(uid=token)
-                isUnread = 0
-                print(user.contactsList)
-                if user.contactsList:
-                    for contact in user.contactsList:
-                        isUnread += contact['unread']
-                # user.type 2
-                data = {
-                    'code': 1,
-                    'msg': "success.",
-                    'type': user.type,
-                    'token': token,
-                    'eml': user.email,
-                    'name': user.name,
-                    'avatar': user.avatar.name,
-                    'isUnread': isUnread,
-                    }
             elif instructor.objects.filter(uid=token).exists() is True:
                 user=instructor.objects.get(uid=token)
-                # user.type 1
-                data = {
-                    'code': 1,
-                    'msg': "success.",
-                    'type': user.type,
-                    'token': token,
-                    'eml': user.email,
-                    'name': user.name,
-                    'avatar': user.avatar.name
-                    }
+
+            isUnread = 0
+            # print(user.contactsList)
+            if user.contactsList:
+                for contact in user.contactsList:
+                    isUnread += contact['unread']
+            # user.type 2 student # user.type 1 instructor
+            data = {
+                'code': 1,
+                'msg': "success.",
+                'type': user.type,
+                'token': token,
+                'eml': user.email,
+                'name': user.name if user.type == 1 else user.profile.name.split()[0],
+                'avatar': user.avatar.name,
+                'isUnread': isUnread,
+                }
+
             return HttpResponse(json.dumps(data), content_type='application/json')
     except Exception as e:
         # 出现意外情况返回异常

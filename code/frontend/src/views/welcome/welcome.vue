@@ -1,7 +1,7 @@
 <template>
 <div id="background">
   <el-header>
-      <div class = "product-name" style = "text-align: left;">Teamup</div>
+      <div class = "product-name" style = "text-align: left;">TeamUp</div>
       <el-button id="login_btn" type="success" @click="gologin" round = "true" align = "right">login</el-button>
   </el-header>
 
@@ -12,9 +12,12 @@
     <br/>
     <br/>
     <br/>
+    <br/>
+    <br/>
+    <br/>
     <div class = "title">Join a group project</div>
     <div class = "title">easier with</div>
-    <div class = "product-name">Teamup !!</div>
+    <div class = "product-name">TeamUp !!</div>
     </div></el-col>
   <el-col :span="12"><div class="grid-content bg-purple-light">
     <div class="block">
@@ -30,10 +33,10 @@
 <el-main>
   <div class = "subtitle">Easy-to-use interface</div>
   <div class = "under_subtitle">One-Click Grouping, Create project, Browser projects</div>
-    <div>
-  <el-carousel indicator-position="outside">
-    <el-carousel-item v-for="item in 4" :key="item">
-      <h3>{{ item }}</h3>
+    <div class = "showpage">
+  <el-carousel indicator-position="inside">
+    <el-carousel-item class="gallery" v-for="item in 5" :key="item">
+      <el-image :src="require('../../assets/demoimg/page'+item+'.png')" :fit="fill"></el-image>
     </el-carousel-item>
   </el-carousel>
     </div>
@@ -114,21 +117,34 @@
 
 
 <style>
-  .el-carousel__item h3 {
+/*  .el-carousel__item h3 {
     color: #475669;
     font-size: 18px;
     opacity: 0.75;
     line-height: 300px;
     margin: 0;
+  } */
+  .showpage{
+    display: flex;
+    justify-content: center;
   }
 
-  .el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
+  .el-carousel {
+
+/*    line-height: 200px; */
+    margin: 0;
+    width: 80%;
+    height:800px;
   }
 
-  .el-carousel__item:nth-child(2n+1) {
-    background-color: #d3dce6;
+  .gallery{
+
+    width: 100%;
+    height:700px;
+
   }
+
+
 
   #login_btn{
     margin: auto 0;
@@ -148,7 +164,7 @@
   }
 
   .el-header, .el-footer {
-    color: #333;
+    color: #333230;
     text-align: center;
     line-height: 80px;
   }
@@ -174,25 +190,28 @@
   font-family: Arial, Helvetica, sans-serif;
   }
   .product-name{
-  font-size:50px;
+  font-size:56px;
   color: rgb(58, 69, 167);
-  font-family: Arial, Helvetica, sans-serif;
+/*  font-family: Arial, Helvetica, sans-serif; */
+  font-family: fantasy;
   }
   .blue_background{
     background-color: rgb(218, 221, 236);
   }
   .darkblue_background{
-    background-color: rgb(102, 140, 245);
+    background-color: rgb(228, 245, 255);
   }
   .subtitle{
     text-align:center;
-    font-size:30px;
+    font-size:38px;
     margin: 20px;
+    font-family: Times, "Times New Roman", Georgia, serif;
   }
   .under_subtitle{
     text-align:center;
-    font-size:18px;
+    font-size:28px;
     color: rgb(104, 104, 104);
     margin: 20px;
+    font-family: Times, "Times New Roman", Georgia, serif;
   }
 </style>

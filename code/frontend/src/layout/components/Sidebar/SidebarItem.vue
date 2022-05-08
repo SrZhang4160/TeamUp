@@ -12,8 +12,10 @@
           :index="resolvePath(onlyOneChild.path)"
           :class="{ 'submenu-title-noDropdown': !isNest }"
            @click="itemClick"
+           v-if="jurisdiction==onlyOneChild.meta.authority||onlyOneChild.meta.authority==undefined"
         >
           <item
+          
             :icon="onlyOneChild.meta.icon || (item.meta && item.meta.icon)"
             :title="onlyOneChild.meta.title"
            
@@ -60,6 +62,8 @@ import FixiOSBug from "./FixiOSBug";
 import { getInfo } from "@/api/userapi";
 import { getToken } from '@/utils/auth'
 import { get } from 'http';
+import { mapGetters } from 'vuex'
+import { log } from 'util';
 export default {
   name: "SidebarItem",
   components: { Item, AppLink },
@@ -69,6 +73,12 @@ export default {
     item: {
       type: Object,
       required: true,
+    },
+    isShow:{
+      type:Boolean
+    },
+    unread:{
+      type:String
     },
     isNest: {
       type: Boolean,
@@ -84,28 +94,26 @@ export default {
     // TODO: refactor with render function
     this.onlyOneChild = null;
     return {
-      isShow: true,
-      unread:null,
+      
+      jurisdiction:null
     };
   },
+    computed: {
+    ...mapGetters([
+      'type'
+    ])
+  },
   created() {
-    this.getUserInfo()
+    // 1 false 2 true 不是
+    if(this.type=="1"){
+      this.jurisdiction=1.
+
+    }else{
+      this.jurisdiction=0
+    }
   },
   methods: {
-    getUserInfo(){
-      let token=JSON.parse(localStorage.getItem('token'))
-      getInfo(token).then((res) => {
-        console.log('isUnread:'+res.isUnread)
-        if(res.isUnread!=0 || null){
-          console.log('isUnread:hongDian')
-          this.isShow = true
-          this.unread=res.isUnread
-        }else{
-          console.log('isUnread:noHong')
-          this.isShow = false
-        }
-      });
-    },
+    
     hasOneShowingChild(children = [], parent) {
       const showingChildren = children.filter((item) => {
         if (item.hidden) {

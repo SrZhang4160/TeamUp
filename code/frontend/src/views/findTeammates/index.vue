@@ -62,7 +62,7 @@ export default {
       window.open(routerJump.href, "_blank");
     },
     fetchData(val) {
-        console.log(val);
+        //console.log(val);
             // if(val==1&&this.keyWords==''){
             //    this.$message.error('搜索内容不能为空')
             //    return
@@ -79,9 +79,9 @@ export default {
                 this.$message.success(response.msg);
                 this.messagetList = response.userlist;
                 this.messagetList.map(item => {
-                    console.log(item.avatar);
+                    //console.log(item.avatar);
                     item.avatar = require(`../../assets/avatar/${item.avatar}.png`);
-                    console.log(item.avatar);
+                    //console.log(item.avatar);
                 });
                 } else {
                 this.$message.error(response.msg);

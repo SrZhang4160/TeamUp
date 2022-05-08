@@ -27,15 +27,15 @@ def project_page_exit(request):
                 user = student.objects.get(uid=HTTP_X_TOKEN)
                 try:
                     project = Project.objects.get(projectId=req['projectId'])
-                except:
+                except: # myGroup
                     user = student.objects.get(uid=HTTP_X_TOKEN)
                     try:
-                        if len(user.project.projectId) > 0 : 
-                            project = user.project
+                        if user.projectId: 
+                            project = Project.objects.get(projectId=user.projectId)
                     except:
                         project = Project.objects.get(projectId=user.profile.userProject['projectId'])
                 user.projectId = ""
-                user.project = None
+                # user.project = None
                 user.profile.userProject = []
                 new_teamMemName = []
                 for team_mem in project.teamMemName:
@@ -43,13 +43,13 @@ def project_page_exit(request):
                         new_teamMemName.append(team_mem)
                 project.teamMemName = new_teamMemName
                 user.profile.save()
-                user.project.save()
+                # user.project.save()
                 user.save()
                 project.save()
                 data = PROJECT_MSG(code=1, msg=PROJECT_EXIT_SUCCESS)
                 # print(data)
             except:
-                data = PROJECT_MSG(msg=PROJECT_EDIT_FAIL)
+                data = PROJECT_MSG(code=0,msg=PROJECT_EDIT_FAIL)
             return HttpResponse(json.dumps(data), content_type='application/json')
         
     except Exception as e:
@@ -105,9 +105,9 @@ def project_page_edit(request):
                         if _tmp_user.projectId is not None:
                             if len(_tmp_user.projectId) > 0:
                                 if project.projectId != _tmp_user.projectId:
-                                    data = PROJECT_MSG(msg=_tmp_user.name + " has belong to other project !")
+                                    data = PROJECT_MSG(msg=_tmp_user.profile.name + " has belong to other project !")
                                     return HttpResponse(json.dumps(data), content_type='application/json')
-                        _tmp_user_name = _tmp_user.name
+                        _tmp_user_name = _tmp_user.profile.name
                         _tmp_user.projectId = project.projectId
                         #### If ADD TEAM MEMBER, need to update team member's project
                         _tmp_user.project = Project.objects.get(projectId=project.projectId)
@@ -215,7 +215,7 @@ def project_page_view(request):
                                 "skillWanted": project.skillWanted,
                                 "teamName": project.teamName,
                                 "teamLeader": project.teamLeader.email,
-                                "teamLeaderName": project.teamLeader.name,
+                                "teamLeaderName": project.teamLeader.profile.name,
                                 "teamMemName": project.teamMemName + [{"name": "", "eml": ""}] * (6 - len(project.teamMemName)) ,
                                 "appliedList": project.applied_stu,
                                 },
@@ -236,7 +236,7 @@ def project_page_view(request):
                                 "skillWanted": project.skillWanted,
                                 "teamName": project.teamName,
                                 "teamLeader": project.teamLeader.email,
-                                "teamLeaderName": project.teamLeader.name,
+                                "teamLeaderName": project.teamLeader.profile.name,
                                 "teamMemName": [{"name": "", "eml": ""} for i in range(6)],
                                 "appliedList": project.applied_stu,
                                 },

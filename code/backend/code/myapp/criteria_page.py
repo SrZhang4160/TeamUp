@@ -1,9 +1,11 @@
 from django.http import HttpResponse, JsonResponse
 from rest_framework.authtoken.models import Token
+from .models import *
 from .models import instructor, Profile
 from .models import prj_group as Prj_group
 from .models import student as Student
 from .msg import *
+# from recommend_project import WV_FROM_BIN
 import json
 from datetime import datetime
 #
@@ -29,6 +31,7 @@ try:
     print('kmeans')
     import gensim.downloader as api
     print('api')
+    # wv_from_bin = WV_FROM_BIN
     wv_from_bin = api.load("glove-wiki-gigaword-50")
     # print(wv_from_bin['ios'])
 except:
@@ -212,30 +215,12 @@ def criteria_group_page(request):
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
-        HTTP_X_TOKEN = req['HTTP_X_TOKEN']
+        pass
     try:
         #### Get criteria
         user = instructor.objects.get(uid=HTTP_X_TOKEN)
         ret_crit = user.criteriaList
         print(ret_crit)
-        ### DUMMY
-        # all_students =student.objects.all()
-        # print(len(all_students))
-        # ct = 0
-        # grp_no = 1
-        # return_project_list = []
-        # teamMem = []
-        # for s in all_students:
-        #     teamMem.append({"name": s.name, "eml": s.email})
-        #     ct +=1
-        #     if ct % 5 == 0:
-        #         return_project_list.append({"groupNo": grp_no, "teamMemName": teamMem})
-        #         teamMem = []
-        #         grp_no += 1
-        # if teamMem != []:
-        #     return_project_list.append({"groupNo": grp_no, "teamMemName": teamMem})
-        # print(return_project_list)
-        ###
         now = datetime.now()
 # [{'Field of Interest': 'Education',
 #   'Grade': 'Graduate',
@@ -249,7 +234,10 @@ def criteria_group_page(request):
     #### Get profiles ###
         print('????')
         try:
-            all_students=Student.objects.all()
+            if user.group_selection == '0':
+                all_students=Student.objects.all()
+            else:
+                all_students=[s for s in Student.objects.all() if (not s.projectId)]
         except:
             print('why')
         # num_members = len(all_students)
@@ -278,12 +266,22 @@ def criteria_group_page(request):
             domain_val_embds = []
             for i,domain in enumerate([c['criteriaName'] for c in ret_crit]):
                 # embd_vector = sentence_embedding(profiles[idx][domain]) # 9*300
-                embd_vector = sum([wv_from_bin[i.lower()] for i in profiles[idx][domain].split()])/len(profiles[idx][domain].split()) # 9*300
+                try:
+                    embd_vector = sum([wv_from_bin[i.lower()] for i in profiles[idx][domain].split()])/len(profiles[idx][domain].split()) # 9*300
+                except:
+                    embd_vector = sum([wv_from_bin[i.lower()] for i in ['is']]) # 9*300
                 domain_val_embds.append(embd_vector)
                 ## currently only similarity, diff --> 1 / domain_val_embd       300 each
-            weighted_embds = sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)])
-            user_all_embeds.append(weighted_embds)
+            # weighted_embds = sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)])
+            user_all_embeds.append(domain_val_embds)
 
+# change embeddings to random sample from all students if that category is DIFFERENT
+        for i,domain in enumerate([c['criteriaPption'] for c in ret_crit]):
+            if 'Different' == domain:
+                all_types = [u[i] for u in user_all_embeds]
+                for j in range(len(user_all_embeds)):
+                    user_all_embeds[j][i] = random.choice(all_types)
+        user_all_embeds = [sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)]) for domain_val_embds in user_all_embeds]
         try:
             print('x0')
             clf = KMeansConstrained(
@@ -340,7 +338,7 @@ def criteria_group_save_page(request):
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
-        HTTP_X_TOKEN = req['HTTP_X_TOKEN']
+        pass
     try:
         all_grps = Prj_group.objects.values()
         all_grps_with_time = []
@@ -373,7 +371,7 @@ def criteria_group_show_page(request):
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
-        HTTP_X_TOKEN = req['HTTP_X_TOKEN']
+        pass
     try:
         print('11')
         grp = Prj_group.objects.values()
@@ -398,7 +396,7 @@ def retrieve_group_with_userID_page(request):
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
-        HTTP_X_TOKEN = req['HTTP_X_TOKEN']
+        pass
     try:
         user = Student.objects.get(uid=HTTP_X_TOKEN)
         print(111)
@@ -415,7 +413,7 @@ def retrieve_group_with_userID_page(request):
             if user.email in [i["eml"] for i in temp_grp['teamMemName']]:
                 print([i["eml"] for i in temp_grp['teamMemName']])
                 for team_mem in temp_grp['teamMemName']:
-                    if team_mem['eml'] != user.email:
+                    if team_mem['eml'] != user.email and team_mem['eml'] != user.profile.preferNot:
                         team_member = Student.objects.get(email=team_mem['eml'])
                         # print(team_member.uid)
                         p = Profile.objects.get(uid= team_member.uid)

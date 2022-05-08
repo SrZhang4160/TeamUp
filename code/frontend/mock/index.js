@@ -4,11 +4,13 @@ const user = require('./user')
 const table = require('./table')
 const project = require('./project')
 const message = require('./message')
+const preview = require('./preview')
 const mocks = [
   ...user,
   ...table,
   ...project,
-  ...message
+  ...message,
+  ...preview
 ]
 
 // for front mock

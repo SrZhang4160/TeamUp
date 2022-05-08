@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="register">
     <section class="form-container">
       <span class="title">Create a TeamUp Account</span>
@@ -42,6 +42,7 @@
               <el-radio id="pig" label="pig"><span class="avarat-radio"> <img src="@/assets/avatar/pig.png" class="avatar"></span></el-radio>
               <el-radio id="undefined" label="undefined"><span class="avarat-radio"> <img src="@/assets/avatar/undefined.png" class="avatar"></span></el-radio>
               <el-radio id="xrr" label="xrr"><span class="avarat-radio"> <img src="@/assets/avatar/xrr.png" class="avatar"></span></el-radio>
+              
             </el-radio-group>
           </el-form-item>
           <el-button type="primary" class="submit-btn" @click="submitForm('registerForm')">Create new account</el-button>
