@@ -12,29 +12,21 @@ def project_page(request):
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
         HTTP_X_TOKEN = req['HTTP_X_TOKEN']
-    print(HTTP_X_TOKEN)
 
     try:
         # get project id and user email
-        print(req)
         all_projects = Project.objects.values()  
         Is_Instructor = False
         try:
-            print('req')
             project = Project.objects.get(projectId=req['projectId'])
-            print("project search is ok")
 
             try: # student
-                print(HTTP_X_TOKEN)
                 user = student.objects.get(uid=HTTP_X_TOKEN)
-                print("student search is ok")
             except: # instructor
                 Is_Instructor = True
-                print("It is instructor")
         except:
             try:
                 user = student.objects.get(uid=HTTP_X_TOKEN)
-                # print(user.profile.userProject)
                 try:
                     if len(user.project.projectId) > 0 : 
                         project = user.project
@@ -48,10 +40,6 @@ def project_page(request):
                 return HttpResponse(json.dumps(data), content_type='application/json')
  
         # --> check user status
-        print(project.teamLeader.email)
-        print(project.teamMemName)
-        print('!!')
-        #print(user)
         if Is_Instructor is True:
             userRole = 0
         else:
@@ -66,8 +54,6 @@ def project_page(request):
                 userRole = 4
             else: # user has no group
                 userRole = 3
-        print('hh')
-        print(userRole)
 
         data =  {
             "code": 1,
