@@ -30,10 +30,6 @@ def create_student(request):
 
 def query_profile(request):
     try:
-        # read request body from front end
-        # print(request.body)
-        # req = json.loads(request.body)
-        
         if request.environ.get('HTTP_X_TOKEN') is not None:
             HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
         else:
@@ -85,11 +81,6 @@ def query_profile_others(request):
         else:
             HTTP_X_TOKEN = req['HTTP_X_TOKEN']           
  
-        # if uid_exists(HTTP_X_TOKEN) is False:
-        #     print(HTTP_X_TOKEN)
-        #     data = PROFILE_MSG(msg=PROFILE_FILL_NO_USER)
-        #     return HttpResponse(json.dumps(data), content_type='application/json')
-        # else:
         try:
             # create student profile and change student status to have already filled in profile info
             # student and profile have the same uid
