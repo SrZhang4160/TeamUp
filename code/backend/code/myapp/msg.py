@@ -56,7 +56,7 @@ TEAMMATE_RETURN_ALL_FAIL2 = "Cannot return all students: HTTP_X_TOKEN or request
 TEAMMATE_RETURN_ALL_FAIL3 = "???!"
 
 LANGUAGE_FAIL1 = "LANGUAGE_FAIL1"
-LANGUAGE_FAIL1 = "LANGUAGE_FAIL2"
+LANGUAGE_FAIL2 = "LANGUAGE_FAIL2"
 INTEREST_FAIL1 = "INTEREST_FAIL1"
 INTEREST_FAIL2 = "INTEREST_FAIL2"
 
@@ -87,6 +87,10 @@ def LOGOUT_RETURN_MSG(code=0, msg=""):
             }
 
 def PROJECT_MSG(code=0, msg=""):
+    return {"code": code,
+            "msg": msg}
+
+def COMMUNICATION_MSG(code=0, msg=""):
     return {"code": code,
             "msg": msg}
 

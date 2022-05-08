@@ -42,8 +42,7 @@ def project_page(request):
                     project = Project.objects.get(projectId=user.profile.userProject['projectId'])
             except:
                 data =  {
-                    "code": 0,
-                    "msg": "You have not join any project yet, please find a project team in the main lobby.",
+                    "code": 1,
                     "userRole": 0,
                     "project": {}}
                 return HttpResponse(json.dumps(data), content_type='application/json')
@@ -85,7 +84,7 @@ def project_page(request):
                     "skillWanted": project.skillWanted,
                     "teamName": project.teamName,
                     "teamLeader": project.teamLeader.email,
-                    "teamLeaderName": project.teamLeader.name,
+                    "teamLeaderName": project.teamLeader.profile.name,
                     "teamMemName": project.teamMemName
                     }
             }

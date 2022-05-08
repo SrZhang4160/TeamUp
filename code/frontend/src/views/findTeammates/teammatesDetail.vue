@@ -62,7 +62,8 @@
         <el-row style="width: 100%;">
           <el-col :span="10" style="width: 100%;">
             <span>Project:</span>
-            <span class="goProject" @click="goProject(projectlList.projectId)">{{projectlList.projectName}}</span>
+            <span class="goProject" @click="goProject(projectlList.projectId)"
+              v-if="projectlList.projectName">{{projectlList.projectName}}</span>
           </el-col>
         </el-row>
       </div>
@@ -97,7 +98,7 @@
         getDetail({
           email: email
         }).then(res => {
-          console.log(res);
+          //console.log(res);
           this.detailList = res.userDetails
           this.projectlList = res.userProject
 

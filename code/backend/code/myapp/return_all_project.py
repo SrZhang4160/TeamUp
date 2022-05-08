@@ -148,7 +148,7 @@ def student_interest_field_distribution(request):
             all_profiles = Profile.objects.all()
             interests = {}
             for profile in all_profiles:
-                print('INTERESTT')
+                # print('INTERESTT')
                 try:
                     for _int in profile.fieldInt:
                         if _int not in interests.keys():
@@ -157,7 +157,8 @@ def student_interest_field_distribution(request):
                             interests[_int] += 1
                 except:
                     pass
-            dis_ints = [{"name": key, "num":"{:.2f}".format(interests[key])} for key in interests.keys()]
+            # dis_ints = [{"name": key, "num":"{:.2f}".format(interests[key])} for key in interests.keys()]
+            dis_ints = [{"name": key, "num": interests[key]} for key in interests.keys()]
             data = {"code":1,
                     "msg":"suc",
                     "interestedFields": dis_ints}

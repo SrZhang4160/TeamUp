@@ -9,11 +9,17 @@
               <el-input
                 v-model.trim="form.keyWords"
                 placeholder="Send to"
+                @input="inputFrom"
               ></el-input>
             </el-form-item>
           </div>
           <div class="bottomSend">
-            <el-input v-model="content" type="textarea" :rows="24"></el-input>
+            <el-input
+              v-model="content"
+              @input="inputFrom"
+              type="textarea"
+              :rows="24"
+            ></el-input>
           </div>
           <div class="senButton">
             <el-button type="primary" @click="send">Send</el-button>
@@ -21,16 +27,12 @@
         </el-form>
       </div>
       <!-- @scroll="rightMessageScroll()" -->
-      <div
-        class="rightMessage"
-        ref="rightMessage"
-        
-      >
+      <div class="rightMessage" ref="rightMessage">
         <div
           class="box"
           v-for="(item, index) in projectList"
           :key="index"
-          @click="checkRecord(item,index)"
+          @click="checkRecord(item, index)"
         >
           <div class="chattingList" @click="handleChange(index)">
             {{ item.email }}
@@ -52,17 +54,15 @@
               >
                 <div class="img"><img :src="item.avatar" alt="" /></div>
                 <div>
-                  <span style="font-size:12px; color:#ccc;">{{item.sendTime}}</span>
-                <p class="dialogue">{{ item.message }}</p>
+                  <span style="font-size: 12px; color: #ccc">{{
+                    item.sendTime
+                  }}</span>
+                  <p class="dialogue">{{ item.message }}</p>
                 </div>
               </div>
             </div>
           </div>
-          <el-badge
-            is-dot
-            class="item"
-            v-if="item.unread >= 1"
-          ></el-badge>
+          <el-badge is-dot class="item" v-if="item.unread >= 1"></el-badge>
           <span v-if="item.unread == 0"></span>
         </div>
       </div>
@@ -75,9 +75,12 @@ import {
   getMessageList,
   getMessagerecord,
   getSendMessage,
+  saveword,
+  readingdata,
 } from "@/api/message";
 import { isInnerEmail } from "../../api/utils.js";
 import { log } from "util";
+import { setTimeout } from "timers";
 export default {
   data() {
     return {
@@ -88,11 +91,12 @@ export default {
       content: "",
       show: true,
       activeIndex: -1,
-      activeIndexs:-1,
+      activeIndexs: -1,
       activeName: "",
       isme: "1",
       projectList: [],
       messageList: [],
+      emails: "",
       rules: {
         keyWords: [
           {
@@ -112,47 +116,39 @@ export default {
   },
   created() {
     this.getList();
-    if (this.$route.query.email) {
+    readingdata({}).then(res=>{
+      this.form.keyWords=res.sendTo
+      this.content=res.sendMessage
+      if (this.$route.query.email != null) {
+        this.form.keyWords = this.$route.query.email;
+      }
+    })
+    if (this.$route.query.email != null) {
       this.form.keyWords = this.$route.query.email;
     }
+    // console.log(readingdata,"readingdatareadingdata");
   },
   methods: {
-    //
-    // rightMessageScroll(e) {
-    //   var scrollTop = this.$refs.rightMessage.scrollTop; //滚动条的位置
-    //   var windowHeitht = this.$refs.rightMessage.clientHeight; //在页面上返回内容的可视高度
-    //   var scrollHeight = this.$refs.rightMessage.scrollHeight; //返回整个元素的高度（包括带滚动条的隐蔽的地方）
-    //   // console.log(scrollTop,windowHeitht,scrollHeight);
-    //   let arr = [
-    //     {
-    //       avatar: "dragon",
-    //       isme: 0,
-    //       message: "aaa",
-    //       sendTime: "2022-03-23 12:23",
-    //     },
-    //     {
-    //       avatar: "dragon",
-    //       isme: 1,
-    //       message: "aaa",
-    //       sendTime: "2022-03-23 12:23",
-    //     },
-    //     {
-    //       avatar: "dragon",
-    //       isme: 0,
-    //       message: "aaa",
-    //       sendTime: "2022-03-23 12:23",
-    //     },
-    //     {
-    //       avatar: "dragon",
-    //       isme: 1,
-    //       message: "aaa",
-    //       sendTime: "2022-03-23 12:23",
-    //     },
-    //   ];
-    //   if (Math.round(scrollTop) + windowHeitht >= scrollHeight) {
-    //     this.messageList=[...this.messageList,...arr]
-    //   }
-    // },
+    inputFrom() {
+      //  sendTo: this.form.keyWords,
+      //     sendMessage: this.content,
+      if (this.form.keyWords.length > 0 && this.content.length > 0) {
+        setTimeout(() => {
+          localStorage.setItem("keywords", this.form.keyWords);
+          localStorage.setItem("content", this.content);
+          saveword({
+            sendTo: localStorage.getItem("keywords"),
+            sendMessage: localStorage.getItem("content"),
+          }).then((res) => {
+            if (res.code == 1) {
+              //console.log(res);
+              localStorage.removeItem("keywords");
+              localStorage.removeItem("content");
+            }
+          });
+        }, 2000);
+      }
+    },
     handleChange(val) {
       // this.show=!this.show
       this.activeIndex = this.activeIndex == val ? -1 : val;
@@ -167,11 +163,12 @@ export default {
         }
       });
     },
-    checkRecord(val,index) {
-      this.projectList.forEach((item)=>{
-        console.log(item,index);
-        this.projectList[index].unread=0
-      })
+    checkRecord(val, index) {
+      this.projectList.forEach((item) => {
+        //console.log(item, index);
+        this.projectList[index].unread = 0;
+      });
+      this.emails = val.email;
       const params = {
         email: val.email,
         page: 1,
@@ -201,6 +198,26 @@ export default {
             if (res.code == 1) {
               this.$message.success(res.msg);
               this.content = "";
+              if (this.emails != "") {
+                const params = {
+                  email: this.emails,
+                  page: 1,
+                  size: 20,
+                };
+                const { email, page, size } = params;
+                getMessagerecord({ email: email, page: page, size: size }).then(
+                  (res) => {
+                    if (res.code == 1) {
+                      this.messageList = res.messageList;
+                      this.messageList.map((item) => {
+                        item.avatar = require(`../../assets/avatar/${item.avatar}.png`);
+                      });
+                    } else {
+                      this.$message.error(res.msg);
+                    }
+                  }
+                );
+              }
             } else {
               this.$message.error(res.msg);
             }
@@ -364,11 +381,10 @@ export default {
     left: 150px;
   }
 }
-.el-badge{
+.el-badge {
   position: absolute;
   right: -4px;
   top: 14px;
-
 }
 .el-badge__content.is-dot {
   width: 15px;

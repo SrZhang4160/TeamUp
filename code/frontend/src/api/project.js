@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 打开列表
 export function getList(data) {
   return request({
-    url: 'return_all_project_api',
+     url: 'return_all_project_api',
     // url: '/vue-admin-template/project/list',
     method: 'post',
     data
@@ -12,8 +12,8 @@ export function getList(data) {
 // 获取数字1
 export function HaveTeamNumber() {
   return request({
-    url: 'return_student_with_proj_num_api',
-   // url: '/vue-admin-template/project/HaveTeamNumber',
+     url: 'return_student_with_proj_num_api',
+    //url: '/vue-admin-template/project/HaveTeamNumber',
     method: 'post'
   })
 }
@@ -21,15 +21,15 @@ export function HaveTeamNumber() {
 export function noTeamNumber() {
   return request({
     url: 'return_student_without_proj_num_api',
-   //  url: '/vue-admin-template/project/noTeamNumber',
+     //url: '/vue-admin-template/project/noTeamNumber',
     method: 'post'
   })
 }
 // 推荐项目
 export function recommendList() {
   return request({
-    url: 'recommend_project_api',
-    // url: '/vue-admin-template/project/recommendList',
+     url: 'recommend_project_api',
+   // url: '/vue-admin-template/project/recommendList',
     method: 'post'
   })
 }
@@ -54,8 +54,8 @@ export function joinProject(data) {
 // 项目leaveProject
 export function leaveProject(data) {
   return request({
-    url: 'project_page_exit_api',
-    // url: '/XXXX',
+   url: 'project_page_exit_api',
+      //url: '/XXXX',
     method: 'post',
     data
   })
@@ -63,8 +63,8 @@ export function leaveProject(data) {
 // 项目解散
 export function erminateProject(data) {
   return request({
-    url: 'del_project_api',
-    // url: '/vue-admin-template/project/erminateProject',
+   url: 'del_project_api',
+    //  url: '/vue-admin-template/project/erminateProject',
     method: 'post',
     data
   })
@@ -73,7 +73,7 @@ export function erminateProject(data) {
 export function projectEdit(data) {
   return request({
     url: 'project_page_view_api',
-    // url: '/vue-admin-template/project/projectEdit',
+     //url: '/vue-admin-template/project/projectEdit',
     method: 'post',
     data
   })
@@ -81,17 +81,25 @@ export function projectEdit(data) {
 // 项目详情 编辑保存
 export function saveEditProject(data) {
   return request({
-    url: 'project_page_edit_api',
-    // url: '/vue-admin-template/project/saveEditProject',
+   url: 'project_page_edit_api',
+     // url: '/vue-admin-template/project/saveEditProject',
     method: 'post',
     data
   })
 }
 export function create_project_api(data) {
-  // console.log("test cre22")
   return request({
     url: 'create_project_api',
     // url: '',
+    method: 'post',
+    data
+  })
+}
+//公告栏
+export function bulletin(data) {
+  return request({
+    // url: '/vue-admin-template/project/bulletin',
+    url: 'annos_latest_msg_api',
     method: 'post',
     data
   })
