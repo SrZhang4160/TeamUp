@@ -63,12 +63,6 @@ def annos_retrieve_msg(request):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 def annos_latest_msg(request):
-    # data = {"code":1,
-    #             "msg":"suc",
-    #             "announcement":{'name': 'anc', 'val': 'anc is dead', 'releaseTime': '2022-04-22 02:47:32'}}
-    # return HttpResponse(json.dumps(data), content_type='application/json')
-    # req = json.loads(request.body)
-
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
@@ -86,20 +80,10 @@ def annos_latest_msg(request):
                             "val":ann['val'],
                             "releaseTime": ann['releaseTime']
                             })
-
-        # print(annos_nodup[:3] if len(annos_nodup) > 3 else annos_nodup)
         data = {"code":1,
                 "msg":"suc",
                 "announcements":annos_nodup[:3] if len(annos_nodup) > 3 else annos_nodup
                 }
-        # data = {"code":1,
-        #         "msg":"suc",
-        #         "announcements":{
-        #                     "name":anno_latest['name'],
-        #                     "val":anno_latest['val'],
-        #                     "releaseTime": anno_latest['releaseTime']
-        #                     }
-        #         }
         return HttpResponse(json.dumps(data), content_type='application/json')
     except:
         data =  {"code": 0, "msg": "fail"}
