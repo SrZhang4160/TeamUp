@@ -88,6 +88,10 @@ def PROJECT_MSG(code=0, msg=""):
     return {"code": code,
             "msg": msg}
 
+def COMMUNICATION_MSG(code=0, msg=""):
+    return {"code": code,
+            "msg": msg}
+
 def PROJECT_MSG_SEARCH_RETURN(code=0, msg=""):
     return {
             "code":code,

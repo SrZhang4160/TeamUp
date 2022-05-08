@@ -340,7 +340,7 @@ export default {
     },
 
     handleSelect(item) {
-      console.log(item);
+      //console.log(item);
     },
 
     loadAll() {
@@ -430,7 +430,7 @@ export default {
       // if (this.otherLanguage.length !== 0) {
       //   this.addstinfo.checkedLanguage.push(this.otherLanguage)
       // }
-      console.log(this.addstinfo)
+      //console.log(this.addstinfo)
       this.loading = true
       // this.addstinfo
       this.$store.dispatch('user/addstinfo', this.addstinfo).then(() => {
@@ -448,7 +448,7 @@ export default {
       })
     },
     testGomain() {
-      console.log('TXXX' + this.type)
+      //console.log('TXXX' + this.type)
       if (this.type !== 0) {
         this.$router.push('/')
       }

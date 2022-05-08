@@ -304,14 +304,14 @@ export default {
   },
 
   created() {
-    console.log("update page")
+    //console.log("update page")
     this.fetchData()
   },
 
   methods: {
     fetchData() {
       query_profile_api().then(response => {
-        console.log("fetch success!!!!!")
+        //console.log("fetch success!!!!!")
         this.addstinfo = response.userDetails
         // console.log(this.stinfo)
       })
@@ -333,7 +333,7 @@ export default {
     },
 
     handleSelect(item) {
-      console.log(item);
+      //console.log(item);
     },
 
     loadAll() {
@@ -420,7 +420,7 @@ export default {
     },
 
     onSubmitTxxx(form) {
-      console.log(this.addstinfo)
+      //console.log(this.addstinfo)
       this.loading = true
       this.$store.dispatch('user/updatestinfo', this.addstinfo).then(() => {
         // t  his.$router.push({ path: this.redirect || '/' }) // 跳转到main页

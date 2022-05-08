@@ -194,16 +194,18 @@ export default {
       userProject: {}
     }
   },
+  
   created() {
     this.fetchData()
   },
+  
   methods: {
     fetchData() {
       query_profile_api().then(response => {
         this.stinfo = response.userDetails;
         this.userProject = response.userProject;
-        console.log("test!!!!!!!!!!!!!!!!!!!!!!!");
-        console.log(this.userProject);
+        //console.log("test!!!!!!!!!!!!!!!!!!!!!!!");
+        //console.log(this.userProject);
 
       })
     },

@@ -21,7 +21,7 @@
           <img v-if="avatar === 'tiger'" src="@/assets/avatar/tiger.png" class="user-avatar">
           <img v-if="avatar === 'undefined'" src="@/assets/avatar/undefined.png" class="user-avatar">
           <img v-if="avatar === 'xrr'" src="@/assets/avatar/xrr.png" class="user-avatar">
-
+		  <img v-if="avatar === 'ter'" src="@/assets/avatar/ter.png" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -30,10 +30,10 @@
               Home
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
+          <a target="_blank" href="https://github.com/cs421sp22-homework/project-team-05-four-z-one-x">
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
+          <a target="_blank" href="https://docs.google.com/document/d/1-S7LHRFh2EkpVRNlLLsQ-gmJ5FrGmkZ_0Il53oyaK1w/edit#heading=h.z0kvevi9uq5t">
             <el-dropdown-item>Docs</el-dropdown-item>
           </a>
           <el-dropdown-item divided @click.native="logout">

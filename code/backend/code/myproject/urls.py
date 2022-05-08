@@ -103,4 +103,9 @@ urlpatterns = [
     path('contact_show_api', myapp_contact_page.contact_show),
     #4.2
     path('contact_edit_api', myapp_contact_page.contact_edit),
+    # iter6
+    # 1.1
+    path('cache_message_api', myapp_communication.cache_message),
+    # 1.2
+    path('retrieve_cache_message_api', myapp_communication.retrieve_cache_message),
 ]

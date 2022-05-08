@@ -14,7 +14,7 @@ const users = {
     avatar: 'chicken',
     eml: 'admin@jhu.edu',
     sex: '1',
-    type : '2',
+    type : '1',
     name: 'Super Admin'
   },
   'editor-token': {
@@ -70,7 +70,7 @@ module.exports = [
         avatar: 'chicken',
         eml: 'admin@jhu.edu',
         sex: '1',
-        type : '2',
+        type : '1',
         name: 'Super Admin',
         isUnread:'10'//未读信息
       }

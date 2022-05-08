@@ -7,7 +7,7 @@ import json
 def uid_exists(uid):
     return student.objects.filter(uid=uid).exists()    
 
-def del_project(request):
+def del_project(request): # delete 1.project, 2.user projectId, 3.user.profile.userProject
     try:
         req = json.loads(request.body)
         
@@ -21,16 +21,18 @@ def del_project(request):
                 project = Project.objects.get(projectId=req['projectId'])
                 user = student.objects.get(uid=HTTP_X_TOKEN)
             except:
+                # myGroup
                 user = student.objects.get(uid=HTTP_X_TOKEN)
-                if len(user.project.projectId) > 0 : 
+                if user.projectId: 
                     project = user.project
             all_students = student.objects.values()
             for tmp_student in all_students:
                 if tmp_student['projectId'] is not None:
                     if tmp_student['projectId'] == project.projectId:
-                        user=student.objects.get(email=tmp_student['email'])
-                        user.projectId = None
-                        user.save()
+                        user_tmp=student.objects.get(email=tmp_student['email'])
+                        user_tmp.projectId = None
+                        user_tmp.profile.userProject = []
+                        user_tmp.save()
             user.profile.userProject = []
             user.profile.save()
             project.delete()
