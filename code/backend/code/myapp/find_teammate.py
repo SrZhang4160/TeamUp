@@ -42,18 +42,8 @@ def return_students(request):
                                 except:
                                     search_str += "".join([s['value'] for s in p.fieldInt])
                                 search_str = "".join([s for s in search_str if s!= ' ']) #
-                                # print(search_str)
                                 # search_str = " ".join(user[search_domains[_key]]) if type( user[search_domains[_key]]) is list else student[search_domains[_key]]
                                 if re.search(req['inputword'], search_str, re.IGNORECASE):
-                                    # avoid duplicate project append
-                                    # print(user.uid)
-                                    # print(user.avatar.name)
-                                    # print(user.email)
-                                    # print([u['userId'] for u in data["userlist"]])
-                                    # print({  "userId":user.uid,
-                                    #     "avatar":user.avatar.name,
-                                    #     "showVal":p.name+' '+p.grade+' '+p.major,
-                                    #     "email":user.email})
                                     if user.uid not in [u['userId'] for u in data["userlist"]]:
                                         data["userlist"].append({  "userId":user.uid,
                                         "avatar":user.avatar.name,
