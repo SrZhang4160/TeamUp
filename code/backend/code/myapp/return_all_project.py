@@ -135,20 +135,14 @@ def project_lang_distribution(request):
 
 def student_interest_field_distribution(request):
     try:
-        # req = json.loads(request.body)
-        print('int1')
-        
-        # if request.environ.get('HTTP_X_TOKEN') is not None:
         try:
             HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
         except:
             HTTP_X_TOKEN = req['HTTP_X_TOKEN'] 
         try:
-            print('START')
             all_profiles = Profile.objects.all()
             interests = {}
             for profile in all_profiles:
-                # print('INTERESTT')
                 try:
                     for _int in profile.fieldInt:
                         if _int not in interests.keys():
@@ -157,25 +151,11 @@ def student_interest_field_distribution(request):
                             interests[_int] += 1
                 except:
                     pass
-            # dis_ints = [{"name": key, "num":"{:.2f}".format(interests[key])} for key in interests.keys()]
             dis_ints = [{"name": key, "num": interests[key]} for key in interests.keys()]
             data = {"code":1,
                     "msg":"suc",
                     "interestedFields": dis_ints}
-            # print(data) # probably since there are no students now
-            # data = {"code":1,"msg":"suc",
-            # "interestedFields":[
-            # {"name":"Books","num":130.55},
-            # {"name":"health","num":230.55},
-            # {"name":"Music","num":330.55},
-            # {"name":"Education","num":320.55},
-            # {"name":"Grocery","num":260.55},
-            # {"name":"Sports","num":120.55},
-            # {"name":"Travel","num":420.55},
-            # {"name":"Lifestyle","num":230.55},
-            # {"name":"Utilties","num":180.55},
-            # {"name":"Others","num":269.45}
-            # ]}
+
             return HttpResponse(json.dumps(data), content_type='application/json')
 
         except:
