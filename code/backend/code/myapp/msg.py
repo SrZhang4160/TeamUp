@@ -68,9 +68,7 @@ def CREATE_USER_MSG(code=0, msg=""):
     return {"code": code,
             "msg": msg}
 
-def PROFILE_MSG(code=0, msg=""):
-    return {"code": code,
-            "msg": msg}
+
 
 def LOGIN_RETURN_MSG(code=0, msg="", type=-1, token="", email="", name="", uid="", HTTP_X_TOKEN=""):  
     return {"code": code,
