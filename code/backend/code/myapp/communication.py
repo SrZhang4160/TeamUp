@@ -14,7 +14,6 @@ def uid_exists(uid):
 def send_message(request):
     try:
         req = json.loads(request.body)
-        print(req)
         
         if request.environ.get('HTTP_X_TOKEN') is not None:
             HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
@@ -34,7 +33,7 @@ def send_message(request):
         if receiver.messageList is None: receiver.messageList = []
         now = datetime.now()
         # Receiver : add this message
-        print('1')
+        
         receiver.messageList.append({
                                     "message":req['sendMessage'],
                                     "sender": sender.email,
@@ -44,7 +43,7 @@ def send_message(request):
                                     "avatar": sender.avatar.name
                                     })
         # Receiver : add/update this contact
-        print('2')
+
         if receiver.contactsList is None: receiver.contactsList = []
         contacted = False
         for i,contact in enumerate(receiver.contactsList):
@@ -62,7 +61,7 @@ def send_message(request):
                                             })
         receiver.save()
         # Sender : add this message
-        print('3')
+
         if sender.messageList is None: sender.messageList = []
         sender.messageList.append({
                                     "message":req['sendMessage'],
@@ -73,7 +72,7 @@ def send_message(request):
                                     "avatar": sender.avatar.name
                                     })
         # Sender : add/update this contact
-        print('4')
+
         if sender.contactsList is None: sender.contactsList = []
         contacted = False
         for i,contact in enumerate(sender.contactsList):
@@ -105,25 +104,21 @@ def retrieve_contact(request):
             HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
         else:
             HTTP_X_TOKEN = req['HTTP_X_TOKEN'] 
-        # print(req)
-        # print(HTTP_X_TOKEN)
         
         if uid_exists(HTTP_X_TOKEN) is False:
             data = PROJECT_MSG(msg=PROJECT_CREATION_NO_USER)
             return HttpResponse(json.dumps(data), content_type='application/json')
         else:
-            print('1')
             try:
                 contact = student.objects.get(uid=HTTP_X_TOKEN)
             except:
                 contact = instructor.objects.get(uid=HTTP_X_TOKEN)
-            print('2')
             data = {
                 "code":1,
                 "msg":"Success",
                 "projectList":[i for i in contact.contactsList if i['email']!='CACHE'] if contact.contactsList else []
             }
-            print(data)
+
             return HttpResponse(json.dumps(data), content_type='application/json')
         
     except Exception as e:
@@ -206,15 +201,7 @@ def cache_message(request):
     except Exception as e:
         data = COMMUNICATION_MSG(msg="cache_message fail")
         return HttpResponse(json.dumps(data), content_type='application/json')
-# {
-#  "sendTo":"YYY@JHU.EDU",
-#  "sendMessage":"HELLO…… best"
-#  }
 
-# {
-#  "code":1,
-#  "msg":"获取成功",
-# }
 def retrieve_cache_message(request):
     try:
         req = json.loads(request.body)
@@ -239,10 +226,3 @@ def retrieve_cache_message(request):
     except Exception as e:
         data = {"code":1, "msg":"no msg", "sendTo":"", "sendMessage":""}
         return HttpResponse(json.dumps(data), content_type='application/json')
-
-# {
-#  "code":1,
-#  "msg":"获取成功",
-#  "sendTo":"YYY@JHU.EDU",
-#  "sendMessage":"HELLO…… best"
-#  }
