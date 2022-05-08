@@ -5,7 +5,6 @@ from .models import instructor, Profile
 from .models import prj_group as Prj_group
 from .models import student as Student
 from .msg import *
-# from recommend_project import WV_FROM_BIN
 import json
 from datetime import datetime
 #
@@ -16,31 +15,19 @@ import numpy as np
 from numpy import linalg as LA
 import matplotlib.pyplot as plt
 # Dimension reduction and clustering libraries
-"""
-pip uninstall umap
-pip install umap-learn
-pip install k-means-constrained
-pip install numba==0.53
-"""
 try:
-    #import umap.umap_ as umap
     import numpy as np
     import math
     import random
     from k_means_constrained import KMeansConstrained
-    print('kmeans')
     import gensim.downloader as api
-    print('api')
-    # wv_from_bin = WV_FROM_BIN
     wv_from_bin = api.load("glove-wiki-gigaword-50")
-    # print(wv_from_bin['ios'])
 except:
     print("NOT WORKING!")
     pass
 
 def criteria_page(request):
     req = json.loads(request.body)
-    print(req)
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
@@ -69,13 +56,8 @@ def criteria_page(request):
                 mbti = {"criteriaId":"008", "criteriaName":"MBTI", "criteriaNum":0, "criteriaPption":"Similar"}
                 skillLevel = {"criteriaId":"009", "criteriaName":"Skill Level", "criteriaNum":0, "criteriaPption":"Similar"}
 
-                # all_criteria = criteria.objects.values()
-
                 for crit in [major,grade,leadInt,fieldInt,exep,prod,lang,mbti,skillLevel]:
                     user.criteriaList.append(crit)
-                    # user.criteriaList.append({'criteriaId': criteria.criteriaId, 'criteriaName': criteria.criteriaName, 
-                    #                           'criteriaNum': criteria.criteriaNum, 'criteriaPption': criteria.criteriaPption})
-                print("first time")
                 user.save()
                 data = {
                     "code": 1,
@@ -83,25 +65,7 @@ def criteria_page(request):
                     "criteriaList": user.criteriaList
                 }
             else:
-                print('2nd time')
                 user = instructor.objects.get(uid=HTTP_X_TOKEN)
-                # user.criteriaList = []
-                # major = {"criteriaId":"001", "criteriaName":"Major", "criteriaNum":0, "criteriaPption":"Similar"}
-                # grade = {"criteriaId":"002", "criteriaName":"Grade", "criteriaNum":0, "criteriaPption":"Similar"}
-                # leadInt = {"criteriaId":"003", "criteriaName":"Leadership Interest", "criteriaNum":0, "criteriaPption":"Similar"}
-                # fieldInt = {"criteriaId":"004", "criteriaName":"Field of Interest", "criteriaNum":0, "criteriaPption":"Similar"}
-                # exep = {"criteriaId":"005", "criteriaName":"Related Experience", "criteriaNum":0, "criteriaPption":"Similar"}
-                # prod = {"criteriaId":"006", "criteriaName":"Type of End Product", "criteriaNum":0, "criteriaPption":"Similar"}
-                # lang = {"criteriaId":"007", "criteriaName":"Programming Language", "criteriaNum":0, "criteriaPption":"Similar"}
-                # mbti = {"criteriaId":"008", "criteriaName":"MBTI", "criteriaNum":0, "criteriaPption":"Similar"}
-                # skillLevel = {"criteriaId":"009", "criteriaName":"Skill Level", "criteriaNum":0, "criteriaPption":"Similar"}
-
-                # # all_criteria = criteria.objects.values()
-
-                # print('xxxx')
-                # for crit in [major,grade,leadInt,fieldInt,exep,prod,lang,mbti,skillLevel]:
-                #     user.criteriaList.append(crit)
-                # user.save()
                 data = {
                     "code": 1,
                     "msg": CRITERIA_SUC,
@@ -222,17 +186,7 @@ def criteria_group_page(request):
         ret_crit = user.criteriaList
         print(ret_crit)
         now = datetime.now()
-# [{'Field of Interest': 'Education',
-#   'Grade': 'Graduate',
-#   'Leadership Interest': 'Low',
-#   'MBTI': 'I N T J A',
-#   'Major': 'Electrical Engineering',
-#   'Programming Language': 'Python C++ Java',
-#   'Related Experience': 'Work Experience',
-#   'Skill Level': 'High Medium High',
-#   'Type of End Product': 'iOS'}]
     #### Get profiles ###
-        print('????')
         try:
             if user.group_selection == '0':
                 all_students=Student.objects.all()
@@ -240,8 +194,7 @@ def criteria_group_page(request):
                 all_students=[s for s in Student.objects.all() if (not s.projectId)]
         except:
             print('why')
-        # num_members = len(all_students)
-        print(len(all_students))
+
         profiles = []
         for student in all_students:
             try:
@@ -271,8 +224,6 @@ def criteria_group_page(request):
                 except:
                     embd_vector = sum([wv_from_bin[i.lower()] for i in ['is']]) # 9*300
                 domain_val_embds.append(embd_vector)
-                ## currently only similarity, diff --> 1 / domain_val_embd       300 each
-            # weighted_embds = sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)])
             user_all_embeds.append(domain_val_embds)
 
 # change embeddings to random sample from all students if that category is DIFFERENT
@@ -283,7 +234,6 @@ def criteria_group_page(request):
                     user_all_embeds[j][i] = random.choice(all_types)
         user_all_embeds = [sum([domain_val_embd*norm_domain_criteria for domain_val_embd, norm_domain_criteria in zip(domain_val_embds, norm_domains_criteria)]) for domain_val_embds in user_all_embeds]
         try:
-            print('x0')
             clf = KMeansConstrained(
                     n_clusters=int(math.ceil(len(profiles)/7)),
                     size_min=5,
@@ -293,7 +243,6 @@ def criteria_group_page(request):
             clf.fit_predict(np.asarray(user_all_embeds))
         except:
             try:
-                print('x1')
                 clf = KMeansConstrained(
                         n_clusters=int(math.ceil(len(profiles)/6.5)),
                         size_min=4,
@@ -302,7 +251,6 @@ def criteria_group_page(request):
                         )
                 clf.fit_predict(np.asarray(user_all_embeds))
             except:
-                print('x2')
                 clf = KMeansConstrained(
                         n_clusters=int(math.ceil(len(profiles)/6.5)),
                         size_min=4,
@@ -311,7 +259,6 @@ def criteria_group_page(request):
                         )
                 clf.fit_predict(np.asarray(user_all_embeds))
         kmeans_labels = clf.labels_
-        print('prt2')
         return_project_list = [{"groupNo": i+1 ,"teamMemName":[]} for i in range(np.max(kmeans_labels) + 1)]
         for i,label in enumerate(kmeans_labels):
             return_project_list[label]["teamMemName"].append({"name": profiles[i]['name'],"eml": profiles[i]['eml']})
@@ -333,7 +280,6 @@ def criteria_group_page(request):
 
 
 def criteria_group_save_page(request):
-    # req = json.loads(request.body)
     
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
@@ -343,17 +289,12 @@ def criteria_group_save_page(request):
         all_grps = Prj_group.objects.values()
         all_grps_with_time = []
         for grp in all_grps:
-            print('444')
-            # print(datetime.strptime(grp['groupTag'], "%Y-%m-%d %H:%M:%S"))
             if grp['groupTag'] != "current":
                 all_grps_with_time.append({"time": grp['groupTag'],
                                            "groupinfo": grp['groupinfo']})
-        print('1')
         sorted_grp = sorted(all_grps_with_time, key=lambda t: t['time']) #datetime.strptime(t['time'], "%Y-%m-%d %H:%M:%S")
-        print('2')
         grp_latest = sorted_grp[0]
         grp = Prj_group(groupTag="current", groupinfo=grp_latest['groupinfo'])
-        print('4')
         grp.save()
         data = {"code": 1,
                 "msg": "suc"
@@ -366,17 +307,12 @@ def criteria_group_save_page(request):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 def criteria_group_show_page(request):
-    # req = json.loads(request.body)
-    
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
         pass
     try:
-        print('11')
         grp = Prj_group.objects.values()
-        print('22')
-        print(len(grp))
         for i in grp:
             group = i
         data = {"code": 1,
@@ -391,42 +327,27 @@ def criteria_group_show_page(request):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 def retrieve_group_with_userID_page(request):
-    # req = json.loads(request.body)
-    
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
         pass
     try:
         user = Student.objects.get(uid=HTTP_X_TOKEN)
-        print(111)
         group = Prj_group.objects.values()
-        print(222)
         for i in group:
             grp = i
 # [{"groupNo": 1, "teamMemName": [{"name": "jo111111111", "eml": "jo1@jhu.edu"},.....]},...]
         userlist = []
-        print(grp['groupinfo'])
-        # print([i["eml"] for i in temp_grp['teamMemName']])
-        print(user.email)
         for temp_grp in  grp['groupinfo']:
             if user.email in [i["eml"] for i in temp_grp['teamMemName']]:
-                print([i["eml"] for i in temp_grp['teamMemName']])
                 for team_mem in temp_grp['teamMemName']:
                     if team_mem['eml'] != user.email and team_mem['eml'] != user.profile.preferNot:
                         team_member = Student.objects.get(email=team_mem['eml'])
-                        # print(team_member.uid)
                         p = Profile.objects.get(uid= team_member.uid)
                         userlist.append({  "userId":team_member.uid,
                         "avatar":team_member.avatar.name,
                         "showVal":p.name+' '+p.grade+' '+p.major,
                         "email":team_member.email})
-                        # userlist.append({
-                        #                 "userId":team_member.uid,
-                        #                 "avatar":team_member.avatar.name,
-                        #                 "showVal": " ,".join(team_member.name, team_member.grad, team_member.major),
-                        #                 "email": team_member.email
-                        #                 })
         data = {
                 "code":1,
                 "msg":"suc",
