@@ -7,16 +7,12 @@ import json
 
 def contact_edit(request):
     req = json.loads(request.body)
-    print(req)
     
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
         HTTP_X_TOKEN = req['HTTP_X_TOKEN']
     try:
-        # print(req["zoomLink"])
-        # print(req["Ta"])
-        # print(req["officeHour"])
         contact.objects.all().delete()
         ctc = contact(contactTag="current",
                                   instructorName=req["instructorName"],
@@ -42,7 +38,6 @@ def contact_show(request):
     if request.environ.get('HTTP_X_TOKEN') is not None:
         HTTP_X_TOKEN = request.environ.get('HTTP_X_TOKEN')
     else:
-        # HTTP_X_TOKEN = req['HTTP_X_TOKEN']
         pass
     try:
         ctc = contact.objects.get(contactTag="current")
